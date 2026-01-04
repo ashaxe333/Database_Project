@@ -108,14 +108,12 @@ namespace Projekt
                     {
                         while (reader.Read())
                         {
-                            /*
                             int id = reader.GetInt32("id");
                             int loan_id = reader.GetInt32("loan_id");
                             float amount = reader.GetFloat("amount");
                             DateTime payment_date = reader.GetDateTime("payment_date");
+                            
                             result.Add(new Payment(id, loan_id, amount, payment_date));
-                            */
-                            result.Add(new Payment(reader.GetInt32("id"), reader.GetInt32("loan_id"), reader.GetFloat("amount"), reader.GetDateTime("payment_date")));
                         }
                     }
                 }
@@ -132,7 +130,7 @@ namespace Projekt
         /// Gets payment from the table by id
         /// </summary>
         /// <param name="id"> payment id </param>
-        /// <returns> Payment </returns>
+        /// <returns> Payment object </returns>
         public Payment? GetById(int id)
         {
             Payment? result = null;
@@ -141,13 +139,20 @@ namespace Projekt
                 Console.WriteLine("getting payment");
                 MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("SELECT * FROM payments WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT loan_id, amount, payment_date FROM payments WHERE id = @id", conn))
                 {
                     command.Parameters.Add(new MySqlParameter("@id", id));
                     
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.Read()) result = new Payment(id, reader.GetInt32("loan_id"), reader.GetFloat("amount"), reader.GetDateTime("payment_date"));
+                        if (reader.Read())
+                        {
+                            int loan_id = reader.GetInt32("loan_id");
+                            float amount = reader.GetFloat("amount");
+                            DateTime payment_date = reader.GetDateTime("payment_date");
+
+                            result = new Payment(id, loan_id, amount, payment_date);
+                        }
                         else Console.WriteLine($"Payment with id {id} does not exist");
                     }
                 }

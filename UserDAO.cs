@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using MySql.Data.MySqlClient;
 
 namespace Projekt
 {
@@ -12,12 +12,12 @@ namespace Projekt
         {
             try
             {
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
                 Console.WriteLine("deleting user");
-                using (SqlCommand command = new SqlCommand("DELETE FROM users WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("DELETE FROM users WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
+                    command.Parameters.Add(new MySqlParameter("@id", id));
                     command.ExecuteNonQuery();
                 }
             }
@@ -34,24 +34,24 @@ namespace Projekt
         /// <param name="user"> user to update or insert </param>
         public void Save(User user)
         {
-            SqlConnection conn = DatabaseSingleton.GetInstance();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            SqlCommand command = null;
+            MySqlCommand command = null;
 
             if (user.Id < 1)
             {
                 try
                 {
                     Console.WriteLine("inserting user");
-                    using (command = new SqlCommand("INSERT INTO users ([name], email, is_active, created_at) VALUES (@name, @email, @is_active, @created_at)", conn))
+                    using (command = new MySqlCommand("INSERT INTO users ([name], email, is_active, created_at) VALUES (@name, @email, @is_active, @created_at)", conn))
                     {
-                        command.Parameters.Add(new SqlParameter("@name", user.Name));
-                        command.Parameters.Add(new SqlParameter("@email", user.Email));
-                        command.Parameters.Add(new SqlParameter("@is_active", user.Is_active));
-                        command.Parameters.Add(new SqlParameter("@created_at", user.Created_at));
+                        command.Parameters.Add(new MySqlParameter("@name", user.Name));
+                        command.Parameters.Add(new MySqlParameter("@email", user.Email));
+                        command.Parameters.Add(new MySqlParameter("@is_active", user.Is_active));
+                        command.Parameters.Add(new MySqlParameter("@created_at", user.Created_at));
                         command.ExecuteNonQuery();
 
-                        command.CommandText = "Select @@Identity";
+                        command.CommandText = "Select LAST_INSERT_ID()";
                         user.Id = Convert.ToInt32(command.ExecuteScalar());
                     }
                 }
@@ -66,13 +66,13 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating user");
-                    using (command = new SqlCommand("UPDATE users SET [name] = @name, email = @email, is_active = @is_active, created_at = @created_at WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE users SET [name] = @name, email = @email, is_active = @is_active, created_at = @created_at WHERE id = @id", conn))
                     {
-                        command.Parameters.Add(new SqlParameter("@id", user.Id));
-                        command.Parameters.Add(new SqlParameter("@name", user.Name));
-                        command.Parameters.Add(new SqlParameter("@email", user.Email));
-                        command.Parameters.Add(new SqlParameter("@is_active", user.Is_active));
-                        command.Parameters.Add(new SqlParameter("@created_at", user.Created_at));
+                        command.Parameters.Add(new MySqlParameter("@id", user.Id));
+                        command.Parameters.Add(new MySqlParameter("@name", user.Name));
+                        command.Parameters.Add(new MySqlParameter("@email", user.Email));
+                        command.Parameters.Add(new MySqlParameter("@is_active", user.Is_active));
+                        command.Parameters.Add(new MySqlParameter("@created_at", user.Created_at));
                         command.ExecuteNonQuery();
                     }
                 }
@@ -85,54 +85,86 @@ namespace Projekt
         }
 
         /// <summary>
-        /// Gets all users from the table
+        /// Gets all users
         /// </summary>
-        public void GetAll()
+        /// <returns> List of Users </returns>
+        public List<User> GetAll()
         {
+            List<User> result = new List<User>();
+
             try
             {
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
                 Console.WriteLine("get all users");
-                using (SqlCommand command = new SqlCommand("select * FROM users", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT id, name, email, is_active, created_at FROM users", conn)) //1 connection, 1 reader v jeden moment
                 {
-                    command.ExecuteNonQuery();
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32("id");
+                            string name = reader.GetString("name");
+                            string email = reader.GetString("email");
+                            bool is_active = reader.GetBoolean("is_active");
+                            DateTime created_at = reader.GetDateTime("created_at");
+
+                            result.Add(new User(id, name, email, is_active, created_at));
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("");
             }
+
+            return result;
         }
 
         /// <summary>
         /// Gets user from the table by id
         /// </summary>
         /// <param name="id"> user id </param>
-        public void GetById(int id)
+        /// <returns> User object </returns>
+        public User? GetById(int id)
         {
+            User? result = null;
             try
             {
                 Console.WriteLine("getting user");
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (SqlCommand command = new SqlCommand("SELECT * FROM users WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT name, email, is_active, created_at FROM users WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
-                    command.ExecuteNonQuery();
+                    command.Parameters.Add(new MySqlParameter("@id", id));
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            string name = reader.GetString("name");
+                            string email = reader.GetString("email");
+                            bool is_active = reader.GetBoolean("is_active");
+                            DateTime created_at = reader.GetDateTime("created_at");
+
+                            result = new User(id, name, email, is_active, created_at);
+                        }
+                        else Console.WriteLine($"User with id {id} does not exist");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine($"user with id {id} does not exist");
             }
+
+            return result;
         }
 
         public override string? ToString()
         {
-            return "UserTable";
+            return "Users Table";
         }
     }
 }

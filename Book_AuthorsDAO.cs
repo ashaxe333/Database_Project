@@ -36,7 +36,7 @@ namespace Projekt
         /// <summary>
         /// Inserts or updates book_author based on id
         /// </summary>
-        /// <param name="author"> book_author to insert or update </param>
+        /// <param name="book_authors"> book_author to insert or update </param>
         public void Save(Book_Authors book_authors)
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
@@ -52,7 +52,7 @@ namespace Projekt
                     command.Parameters.Add(new MySqlParameter("@author_id", book_authors.Author_id));
                     command.ExecuteNonQuery();
 
-                    command.CommandText = "Select @@Identity";
+                    command.CommandText = "Select LAST_INSERT_ID()";
                     book_authors.Id = Convert.ToInt32(command.ExecuteScalar());
                 }
             }
@@ -78,9 +78,9 @@ namespace Projekt
         }
 
         /// <summary>
-        /// Gets all payments
+        /// Gets all book_authors
         /// </summary>
-        /// <returns> List of Payments </returns>
+        /// <returns> List of Book_Authors </returns>
         public List<Book_Authors> GetAll()
         {
             List<Book_Authors> result = new List<Book_Authors>();
@@ -96,7 +96,11 @@ namespace Projekt
                     {
                         while (reader.Read())
                         {
-                            result.Add(new Book_Authors(reader.GetInt32("id"), reader.GetInt32("book_id"), reader.GetInt32("author_id")));
+                            int id = reader.GetInt32("id");
+                            int book_id = reader.GetInt32("book_id");
+                            int author_id = reader.GetInt32("author_id");
+
+                            result.Add(new Book_Authors(id, book_id, author_id));
                         }
                     }
                 }
@@ -110,10 +114,10 @@ namespace Projekt
         }
 
         /// <summary>
-        /// Gets payment from the table by id
+        /// Gets book_Authors from the table by id
         /// </summary>
-        /// <param name="id"> payment id </param>
-        /// <returns> Payment </returns>
+        /// <param name="id"> book_Authors id </param>
+        /// <returns> Book_Authors object </returns>
         public Book_Authors? GetById(int id)
         {
             Book_Authors? result = null;
@@ -122,13 +126,19 @@ namespace Projekt
                 Console.WriteLine("getting book_authors");
                 MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("SELECT * FROM book_authors WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT book_id, author_id FROM book_authors WHERE id = @id", conn))
                 {
                     command.Parameters.Add(new MySqlParameter("@id", id));
 
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.Read()) result = new Book_Authors(id, reader.GetInt32("book_id"), reader.GetInt32("author_id"));
+                        if (reader.Read())
+                        {
+                            int book_id = reader.GetInt32("book_id");
+                            int author_id = reader.GetInt32("author_id");
+
+                            result = new Book_Authors(id, book_id, author_id);
+                        }
                         else Console.WriteLine($"book_authors with id {id} does not exist");
                     }
                 }

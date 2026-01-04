@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using MySql.Data.MySqlClient;
 using System.Globalization;
 
 namespace Projekt
@@ -13,11 +13,11 @@ namespace Projekt
         {
             try {
                 Console.WriteLine("deleting book");
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (SqlCommand command = new SqlCommand("DELETE FROM books WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("DELETE FROM books WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
+                    command.Parameters.Add(new MySqlParameter("@id", id));
                     command.ExecuteNonQuery();
                 }
             }
@@ -35,9 +35,9 @@ namespace Projekt
         public void Save(Book book)
         {
 
-            SqlConnection conn = DatabaseSingleton.GetInstance();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            SqlCommand command = null;
+            MySqlCommand command = null;
 
 
             if (book.Id < 1)
@@ -45,14 +45,14 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("inserting book");
-                    using (command = new SqlCommand("INSERT INTO books (title, published_year, isAvailable) VALUES (@title, @published_year, @isAvailablee)", conn))
+                    using (command = new MySqlCommand("INSERT INTO books (title, published_year, available) VALUES (@title, @published_year, @isAvailable)", conn))
                     {
-                        command.Parameters.Add(new SqlParameter("@title", book.Title));
-                        command.Parameters.Add(new SqlParameter("@published_year", book.Published_year));
-                        command.Parameters.Add(new SqlParameter("@isAvailable", book.IsAvailable));
+                        command.Parameters.Add(new MySqlParameter("@title", book.Title));
+                        command.Parameters.Add(new MySqlParameter("@published_year", book.Published_year));
+                        command.Parameters.Add(new MySqlParameter("@isAvailable", book.IsAvailable));
                         command.ExecuteNonQuery();
 
-                        command.CommandText = "Select @@Identity";
+                        command.CommandText = "Select LAST_INSERT_ID()";
                         book.Id = Convert.ToInt32(command.ExecuteScalar());
                     }
                 }
@@ -67,12 +67,12 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating book");
-                    using (command = new SqlCommand("UPDATE books SET title = @title, published_year = @published_yeare, isAvailable = @isAvailable WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_yeare, available = @isAvailable WHERE id = @id", conn))
                     {
-                        command.Parameters.Add(new SqlParameter("@id", book.Id)); 
-                        command.Parameters.Add(new SqlParameter("@title", book.Title));
-                        command.Parameters.Add(new SqlParameter("@published_year", book.Published_year));
-                        command.Parameters.Add(new SqlParameter("@isAvailable", book.IsAvailable));
+                        command.Parameters.Add(new MySqlParameter("@id", book.Id)); 
+                        command.Parameters.Add(new MySqlParameter("@title", book.Title));
+                        command.Parameters.Add(new MySqlParameter("@published_year", book.Published_year));
+                        command.Parameters.Add(new MySqlParameter("@isAvailable", book.IsAvailable));
                         command.ExecuteNonQuery();
                     }
                 }
@@ -85,49 +85,79 @@ namespace Projekt
         }
 
         /// <summary>
-        /// Gets all book from the table
+        /// Gets all books
         /// </summary>
-        public void GetAll()
+        /// <returns> List of Books </returns>
+        public List<Book> GetAll()
         {
+            List<Book> result = new List<Book>();
+
             try
             {
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                Console.WriteLine("get all authors");
-                using (SqlCommand command = new SqlCommand("select * FROM books", conn))
+                Console.WriteLine("get all books");
+                using (MySqlCommand command = new MySqlCommand("SELECT id, title, published_year, available  FROM books", conn)) //1 connection, 1 reader v jeden moment
                 {
-                    command.ExecuteNonQuery();
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32("id");
+                            string title = reader.GetString("title");
+                            int published_year = reader.GetInt32("book_id");
+                            bool available = reader.GetBoolean("available");
+
+                            result.Add(new Book(id, title, published_year, available));
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("");
             }
+
+            return result;
         }
 
         /// <summary>
         /// Gets book from the table by id
         /// </summary>
         /// <param name="id"> book id </param>
-        public void GetById(int id)
+        /// <returns> Book object </returns>
+        public Book? GetById(int id)
         {
+            Book? result = null;
             try
             {
-                Console.WriteLine("getting book");
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                Console.WriteLine($"getting book with id {id}");
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (SqlCommand command = new SqlCommand("SELECT * FROM books WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT title, published_year, available FROM books WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
-                    command.ExecuteNonQuery();
+                    command.Parameters.Add(new MySqlParameter("@id", id));
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            string title = reader.GetString("title");
+                            int published_year = reader.GetInt32("book_id");
+                            bool available = reader.GetBoolean("available");
+
+                            result = new Book(id, title, published_year, available);
+                        }
+                        else Console.WriteLine($"Book with id {id} does not exist");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine($"book with id {id} does not exist");
             }
+
+            return result;
         }
 
         /// <summary>
@@ -173,7 +203,7 @@ namespace Projekt
 
         public override string? ToString()
         {
-            return "BookTable";
+            return "Books Table";
         }
     }
 }

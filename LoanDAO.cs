@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using MySql.Data.MySqlClient;
 
 namespace Projekt
 {
@@ -13,11 +13,11 @@ namespace Projekt
             try
             {
                 Console.WriteLine("deleting loans");
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (SqlCommand command = new SqlCommand("DELETE FROM loans WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("DELETE FROM loans WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
+                    command.Parameters.Add(new MySqlParameter("@id", id));
                     command.ExecuteNonQuery();
                 }
             }
@@ -35,24 +35,24 @@ namespace Projekt
         public void Save(Loan loan)
         {
 
-            SqlConnection conn = DatabaseSingleton.GetInstance();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            SqlCommand command = null;
+            MySqlCommand command = null;
 
             if (loan.Id < 1)
             {
                 try
                 {
                     Console.WriteLine("inserting loans");
-                    using (command = new SqlCommand("INSERT INTO loans ([user_id], book_id, loanDate, returnDate) VALUES (@user_id, @book_id, @loanDate, @returnDate)", conn))
+                    using (command = new MySqlCommand("INSERT INTO loans (user_id, book_id, loanDate, returnDate) VALUES (@user_id, @book_id, @loanDate, @returnDate)", conn))
                     {
-                        command.Parameters.Add(new SqlParameter("@user_id", loan.User_id));
-                        command.Parameters.Add(new SqlParameter("@book_id", loan.Book_id));
-                        command.Parameters.Add(new SqlParameter("@loanDate", loan.LoanDate));
-                        command.Parameters.Add(new SqlParameter("@returnDate", loan.ReturnDate));
+                        command.Parameters.Add(new MySqlParameter("@user_id", loan.User_id));
+                        command.Parameters.Add(new MySqlParameter("@book_id", loan.Book_id));
+                        command.Parameters.Add(new MySqlParameter("@loanDate", loan.LoanDate));
+                        command.Parameters.Add(new MySqlParameter("@returnDate", loan.ReturnDate));
                         command.ExecuteNonQuery();
 
-                        command.CommandText = "Select @@Identity";
+                        command.CommandText = "Select LAST_INSERT_ID()";
                         loan.Id = Convert.ToInt32(command.ExecuteScalar());
                     }
                 }
@@ -67,13 +67,13 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating loans");
-                    using (command = new SqlCommand("UPDATE loans SET user_id = @user_id, book_id = @book_id, loan_date = @loanDate, return_date = @returnDate WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE loans SET user_id = @user_id, book_id = @book_id, loan_date = @loanDate, return_date = @returnDate WHERE id = @id", conn))
                     {
-                        command.Parameters.Add(new SqlParameter("@id", loan.Id));
-                        command.Parameters.Add(new SqlParameter("@user_id", loan.User_id));
-                        command.Parameters.Add(new SqlParameter("@book_id", loan.Book_id));
-                        command.Parameters.Add(new SqlParameter("@loanDate", loan.LoanDate));
-                        command.Parameters.Add(new SqlParameter("@returnDate", loan.ReturnDate));
+                        command.Parameters.Add(new MySqlParameter("@id", loan.Id));
+                        command.Parameters.Add(new MySqlParameter("@user_id", loan.User_id));
+                        command.Parameters.Add(new MySqlParameter("@book_id", loan.Book_id));
+                        command.Parameters.Add(new MySqlParameter("@loanDate", loan.LoanDate));
+                        command.Parameters.Add(new MySqlParameter("@returnDate", loan.ReturnDate));
                         command.ExecuteNonQuery();
                     }
                 }
@@ -86,54 +86,88 @@ namespace Projekt
         }
 
         /// <summary>
-        /// Gets all loans from the table
+        /// Gets all loans
         /// </summary>
-        public void GetAll()
+        /// <returns> List of Loans </returns>
+        public List<Loan> GetAll()
         {
+            List<Loan> result = new List<Loan>();
+
             try
             {
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
                 Console.WriteLine("get all loans");
-                using (SqlCommand command = new SqlCommand("select * FROM loans", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT id, user_id, book_id, loan_date, return_date, status FROM loans", conn)) //1 connection, 1 reader v jeden moment
                 {
-                    command.ExecuteNonQuery();
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32("id");
+                            int user_id = reader.GetInt32("user_id");
+                            int book_id = reader.GetInt32("book_id");
+                            DateTime loan_date = reader.GetDateTime("loan_date");
+                            DateTime return_date = reader.GetDateTime("return_date");
+                            LoanStatus status = Enum.Parse<LoanStatus>(reader.GetString("status"));
+
+                            result.Add(new Loan(id, user_id, book_id, loan_date, return_date, status));
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("");
             }
+
+            return result;
         }
 
         /// <summary>
         /// Gets loan from the table by id
         /// </summary>
         /// <param name="id"> loan id </param>
-        public void GetById(int id)
+        /// <returns> Loan object </returns>
+        public Loan? GetById(int id)
         {
+            Loan? result = null;
             try
             {
                 Console.WriteLine("getting loan");
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (SqlCommand command = new SqlCommand("SELECT * FROM loans WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT user_id, book_id, loan_date, return_date, status FROM loans WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
-                    command.ExecuteNonQuery();
+                    command.Parameters.Add(new MySqlParameter("@id", id));
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            int user_id = reader.GetInt32("user_id");
+                            int book_id = reader.GetInt32("book_id");
+                            DateTime loan_date = reader.GetDateTime("loan_date");
+                            DateTime return_date = reader.GetDateTime("return_date");
+                            LoanStatus status = Enum.Parse<LoanStatus>(reader.GetString("status"));
+
+                            result = new Loan(id, user_id, book_id, loan_date, return_date, status);
+                        }
+                        else Console.WriteLine($"Loan with id {id} does not exist");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine($"loan with id {id} does not exist");
             }
+
+            return result;
         }
 
         public override string? ToString()
         {
-            return "LoansTable";
+            return "Loans Table";
         }
     }
 }

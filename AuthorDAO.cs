@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using MySql.Data.MySqlClient;
 
 namespace Projekt
 {
@@ -12,12 +12,12 @@ namespace Projekt
         {
             try
             {
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
                 Console.WriteLine("deleting author");
-                using (SqlCommand command = new SqlCommand("DELETE FROM authors WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("DELETE FROM authors WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
+                    command.Parameters.Add(new MySqlParameter("@id", id));
                     command.ExecuteNonQuery();
                 }
             }
@@ -34,19 +34,19 @@ namespace Projekt
         /// <param name="author"> author to insert or update </param>
         public void Save(Author author)
         {
-            SqlConnection conn = DatabaseSingleton.GetInstance();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            SqlCommand command = null;
+            MySqlCommand command = null;
 
             if (author.Id < 1)
             {
                 Console.WriteLine("inserting author");
-                using (command = new SqlCommand("INSERT INTO authors ([name]) VALUES (@name)", conn))
+                using (command = new MySqlCommand("INSERT INTO authors ([name]) VALUES (@name)", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@name", author.Name));
+                    command.Parameters.Add(new MySqlParameter("@name", author.Name));
                     command.ExecuteNonQuery();
 
-                    command.CommandText = "Select @@Identity";
+                    command.CommandText = "Select LAST_INSERT_ID()";
                     author.Id = Convert.ToInt32(command.ExecuteScalar());
                 }
             }
@@ -55,10 +55,10 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating author");
-                    using (command = new SqlCommand("UPDATE authors SET [name] = @name WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE authors SET [name] = @name WHERE id = @id", conn))
                     {
-                        command.Parameters.Add(new SqlParameter("@id", author.Id));
-                        command.Parameters.Add(new SqlParameter("@name", author.Name));
+                        command.Parameters.Add(new MySqlParameter("@id", author.Id));
+                        command.Parameters.Add(new MySqlParameter("@name", author.Name));
                         command.ExecuteNonQuery();
                     }
                 }
@@ -71,54 +71,80 @@ namespace Projekt
         }
 
         /// <summary>
-        /// Gets all authors from the table
+        /// Gets all authors
         /// </summary>
-        public void GetAll()
+        /// <returns> List of Authors </returns>
+        public List<Author> GetAll()
         {
+            List<Author> result = new List<Author>();
+
             try
             {
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
                 Console.WriteLine("get all authors");
-                using (SqlCommand command = new SqlCommand("select * FROM authors", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT id, name FROM authors", conn)) //1 connection, 1 reader v jeden moment
                 {
-                    command.ExecuteNonQuery();
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32("id");
+                            string name = reader.GetString("name");
+
+                            result.Add(new Author(id, name));
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine("");
             }
+
+            return result;
         }
 
         /// <summary>
         /// Gets author from the table by id
         /// </summary>
         /// <param name="id"> author id </param>
-        public void GetById(int id)
+        /// <returns> Author object </returns>
+        public Author? GetById(int id)
         {
+            Author? result = null;
             try
             {
                 Console.WriteLine("getting author");
-                SqlConnection conn = DatabaseSingleton.GetInstance();
+                MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (SqlCommand command = new SqlCommand("SELECT * FROM authors WHERE id = @id", conn))
+                using (MySqlCommand command = new MySqlCommand("SELECT * FROM authors WHERE id = @id", conn))
                 {
-                    command.Parameters.Add(new SqlParameter("@id", id));
-                    command.ExecuteNonQuery();
+                    command.Parameters.Add(new MySqlParameter("@id", id));
+
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            string name = reader.GetString("name");
+
+                            result = new Author(id, name);
+                        }
+                        else Console.WriteLine($"Author with id {id} does not exist");
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                Console.WriteLine($"author with id {id} does not exist");
             }
+
+            return result;
         }
 
         public override string? ToString()
         {
-            return "AuthorTable";
+            return "Authors Table";
         }
     }
 }

@@ -22,12 +22,12 @@ namespace Projekt
         public DateTime ReturnDate { get => returnDate; set => returnDate = value; }
         public LoanStatus LoanStatus { get => loanStatus; set => loanStatus = value; }
 
-        public Loan(int id, int user_id, int book_id, DateTime borrowDate, DateTime returnDate, LoanStatus loanStatus)
+        public Loan(int id, int user_id, int book_id, DateTime loanDate, DateTime returnDate, LoanStatus loanStatus)
         {
             Id = id;
             User_id = user_id;
             Book_id = book_id;
-            LoanDate = borrowDate;
+            LoanDate = loanDate;
             ReturnDate = returnDate;
             LoanStatus = loanStatus;
         }
