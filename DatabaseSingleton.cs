@@ -29,7 +29,19 @@ namespace Projekt
                 consStringBuilder.Server = ReadSetting("DataSource");
                 consStringBuilder.ConnectionTimeout = 30;
                 conn = new MySqlConnection(consStringBuilder.ConnectionString);
-                conn.Open();
+
+                //conn.Open();
+
+                try
+                {
+                    conn.Open();
+                    Console.WriteLine($"Database '{consStringBuilder.Database}' connected successfully!"); // <-- tady
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error connecting to database: " + ex.Message);
+                    throw; // můžeš nechat padnout výjimku dál
+                }
             }
             return conn;
         }

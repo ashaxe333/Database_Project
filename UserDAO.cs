@@ -43,7 +43,7 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("inserting user");
-                    using (command = new MySqlCommand("INSERT INTO users ([name], email, is_active, created_at) VALUES (@name, @email, @is_active, @created_at)", conn))
+                    using (command = new MySqlCommand("INSERT INTO users (name, email, is_active, created_at) VALUES (@name, @email, @is_active, @created_at)", conn))
                     {
                         command.Parameters.Add(new MySqlParameter("@name", user.Name));
                         command.Parameters.Add(new MySqlParameter("@email", user.Email));
@@ -66,7 +66,7 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating user");
-                    using (command = new MySqlCommand("UPDATE users SET [name] = @name, email = @email, is_active = @is_active, created_at = @created_at WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE users SET name = @name, email = @email, is_active = @is_active, created_at = @created_at WHERE id = @id", conn))
                     {
                         command.Parameters.Add(new MySqlParameter("@id", user.Id));
                         command.Parameters.Add(new MySqlParameter("@name", user.Name));
