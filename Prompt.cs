@@ -19,6 +19,8 @@ namespace Projekt
         private AuthorDAO authorDAO = new AuthorDAO();
         private LoanDAO loanDAO = new LoanDAO();
         private PaymentDAO paymentDAO = new PaymentDAO();
+        private PaymentSummaryDAO paymentSummaryDAO = new PaymentSummaryDAO();
+        private ActiveLoanDAO activeLoanDAO = new ActiveLoanDAO();
 
         private List<string> commands = new List<string>() { "user", "book", "author", "borrows", "help", "exit"};
         private List<string> tableCommands = new List<string>() { "delete", "update", "insert", "help", "back", "import"};
@@ -32,23 +34,105 @@ namespace Projekt
         }
 
         /// <summary>
-        /// Stará se o vše, co se děje v konzoli, plní příkazy
+        /// Dubug method
         /// </summary>
         public void Execute()
         {
-            //userDAO.Save(new User("Jan Novak", "jan.novak@example.com", true, DateTime.Now));
-
-            //userDAO.Delete(12);
-
-            //Console.WriteLine(userDAO.GetById(1));
-
-            //userDAO.Save(new User(13, "John Smith", "john.smith@example.com", true, DateTime.Now));
+            // =========================
+            // USER
+            // =========================
+            /*
+            userDAO.Save(new User("Jan Novak", "jan.novak@example.com", true, DateTime.Now));
+            userDAO.Delete(15);
+            Console.WriteLine(userDAO.GetById(1));
+            userDAO.Save(new User("John Smith", "john.smith@example.com", true, DateTime.Now));
 
             List<User> users = userDAO.GetAll();
             foreach (User user in users)
             {
                 Console.WriteLine(user);
             }
+            */
+
+            // =========================
+            // AUTHOR
+            // =========================
+            /*
+            authorDAO.Save(new Author("Stephen King"));
+            authorDAO.Save(new Author(11, "George Orwell"));
+            authorDAO.Delete(11);
+            Console.WriteLine(authorDAO.GetById(11));
+
+            List<Author> authors = authorDAO.GetAll();
+            foreach (Author author in authors)
+                Console.WriteLine(author);
+            */
+
+            // =========================
+            // BOOK
+            // =========================
+            /*
+            bookDAO.Save(new Book("1985", null, true));
+            bookDAO.Save(new Book(12, "1984", null, true));
+            bookDAO.Delete(12);
+            Console.WriteLine(bookDAO.GetById(10));
+
+            List<Book> books = bookDAO.GetAll();
+            foreach (Book book in books)
+                Console.WriteLine(book);
+            */
+
+            // =========================
+            // BOOK_AUTHORS (M:N)
+            // =========================
+            /*
+            book_authorsDAO.Save(new Book_Authors(1, 2));
+            book_authorsDAO.Save(new Book_Authors(12, 1, 3));
+            book_authorsDAO.Delete(12);
+            Console.WriteLine(book_authorsDAO.GetById(10));
+
+            List<Book_Authors> bookAuthors = book_authorsDAO.GetAll();
+            foreach (Book_Authors ba in bookAuthors)
+                Console.WriteLine(ba);
+            */
+
+            // =========================
+            // LOAN
+            // =========================
+            /*
+            loanDAO.Save(new Loan(1, 1, DateTime.Now.AddDays(-7), DateTime.Now.AddDays(7), LoanStatus.RETURNED));
+            loanDAO.Save(new Loan(13, 1, 1, DateTime.Now.AddDays(-7), DateTime.Now.AddDays(7), LoanStatus.RETURNED));
+            loanDAO.Delete(14);
+            Console.WriteLine(loanDAO.GetById(13));
+
+            List<Loan> loans = loanDAO.GetAll();
+            foreach (Loan loan in loans)
+                Console.WriteLine(loan);
+            */
+
+            // =========================
+            // PAYMENT
+            // =========================
+            /*
+            paymentDAO.Save(new Payment(1, 9.99f, DateTime.Now));
+            paymentDAO.Save(new Payment(8, 3, 9.99f, DateTime.Now));
+            paymentDAO.Delete(8);
+            Console.WriteLine(paymentDAO.GetById(8));
+
+            List<Payment> payments = paymentDAO.GetAll();
+            foreach (Payment payment in payments)
+                Console.WriteLine(payment);
+            */
+            /*
+            foreach (ActiveLoan activeLoan in activeLoanDAO.GetAll())
+                Console.WriteLine(activeLoan);
+            */
+            
+            foreach (PaymentSummary paymentSummary in paymentSummaryDAO.GetAll())
+                Console.WriteLine(paymentSummary);
+            
+
+            Console.WriteLine("=== DATABASE TEST END ===");
         }
     }
 }

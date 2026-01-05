@@ -41,7 +41,7 @@ namespace Projekt
             if (author.Id < 1)
             {
                 Console.WriteLine("inserting author");
-                using (command = new MySqlCommand("INSERT INTO authors ([name]) VALUES (@name)", conn))
+                using (command = new MySqlCommand("INSERT INTO authors (name) VALUES (@name)", conn))
                 {
                     command.Parameters.Add(new MySqlParameter("@name", author.Name));
                     command.ExecuteNonQuery();
@@ -55,7 +55,7 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating author");
-                    using (command = new MySqlCommand("UPDATE authors SET [name] = @name WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE authors SET name = @name WHERE id = @id", conn))
                     {
                         command.Parameters.Add(new MySqlParameter("@id", author.Id));
                         command.Parameters.Add(new MySqlParameter("@name", author.Name));

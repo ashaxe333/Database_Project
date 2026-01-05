@@ -32,7 +32,7 @@ namespace Projekt
 
         public override string? ToString()
         {
-            return $"{Id}. {Book_id} {Author_id}";
+            return $"id: {Id}, book_id: {Book_id}, author_id: {Author_id}";
         }
     }
 }

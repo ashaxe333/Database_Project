@@ -40,7 +40,7 @@ namespace Projekt
 
         public override string ToString()
         {
-            return $"{Id}. {Name} {Email} {Is_active} {Created_at}";
+            return $"id: {Id}, name: {Name}, email: {Email}, is_active: {Is_active}, created_at: {Created_at}";
         }
     }
 }

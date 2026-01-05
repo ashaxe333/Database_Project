@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using System.Data;
 using System.Globalization;
 
 namespace Projekt
@@ -59,7 +60,7 @@ namespace Projekt
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    Console.WriteLine("One of foreign keys cannot be added -> object doesnt exist");
+                    Console.WriteLine("One of foreign keys cannot be added -> object does not exist");
                 }
             }
             else
@@ -67,7 +68,7 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating book");
-                    using (command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_yeare, available = @isAvailable WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_year, available = @isAvailable WHERE id = @id", conn))
                     {
                         command.Parameters.Add(new MySqlParameter("@id", book.Id)); 
                         command.Parameters.Add(new MySqlParameter("@title", book.Title));
@@ -79,7 +80,7 @@ namespace Projekt
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    Console.WriteLine("Selected id doesnt exist or one of foreign keys cannot be added -> object doesnt exist");
+                    Console.WriteLine("Selected id does not exist or one of foreign keys cannot be added -> object does not exist");
                 }
             }
         }
@@ -105,7 +106,7 @@ namespace Projekt
                         {
                             int id = reader.GetInt32("id");
                             string title = reader.GetString("title");
-                            int published_year = reader.GetInt32("book_id");
+                            int? published_year = reader.IsDBNull("published_year") ? null : reader.GetInt32("published_year");
                             bool available = reader.GetBoolean("available");
 
                             result.Add(new Book(id, title, published_year, available));
@@ -143,7 +144,7 @@ namespace Projekt
                         if (reader.Read())
                         {
                             string title = reader.GetString("title");
-                            int published_year = reader.GetInt32("book_id");
+                            int? published_year = reader.IsDBNull("published_year") ? null : reader.GetInt32("published_year");
                             bool available = reader.GetBoolean("available");
 
                             result = new Book(id, title, published_year, available);

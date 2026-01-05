@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using System.Data;
 
 namespace Projekt
 {
@@ -44,12 +45,13 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("inserting loans");
-                    using (command = new MySqlCommand("INSERT INTO loans (user_id, book_id, loanDate, returnDate) VALUES (@user_id, @book_id, @loanDate, @returnDate)", conn))
+                    using (command = new MySqlCommand("INSERT INTO loans (user_id, book_id, loan_date, return_date, status) VALUES (@user_id, @book_id, @loan_date, @return_date, @status)", conn))
                     {
                         command.Parameters.Add(new MySqlParameter("@user_id", loan.User_id));
                         command.Parameters.Add(new MySqlParameter("@book_id", loan.Book_id));
-                        command.Parameters.Add(new MySqlParameter("@loanDate", loan.LoanDate));
-                        command.Parameters.Add(new MySqlParameter("@returnDate", loan.ReturnDate));
+                        command.Parameters.Add(new MySqlParameter("@loan_date", loan.Loan_date));
+                        command.Parameters.Add(new MySqlParameter("@return_date", loan.Return_date));
+                        command.Parameters.Add(new MySqlParameter("@status", loan.Status.ToString()));
                         command.ExecuteNonQuery();
 
                         command.CommandText = "Select LAST_INSERT_ID()";
@@ -67,13 +69,14 @@ namespace Projekt
                 try
                 {
                     Console.WriteLine("updating loans");
-                    using (command = new MySqlCommand("UPDATE loans SET user_id = @user_id, book_id = @book_id, loan_date = @loanDate, return_date = @returnDate WHERE id = @id", conn))
+                    using (command = new MySqlCommand("UPDATE loans SET user_id = @user_id, book_id = @book_id, loan_date = @loan_date, return_date = @return_date, status = @status WHERE id = @id", conn))
                     {
                         command.Parameters.Add(new MySqlParameter("@id", loan.Id));
                         command.Parameters.Add(new MySqlParameter("@user_id", loan.User_id));
                         command.Parameters.Add(new MySqlParameter("@book_id", loan.Book_id));
-                        command.Parameters.Add(new MySqlParameter("@loanDate", loan.LoanDate));
-                        command.Parameters.Add(new MySqlParameter("@returnDate", loan.ReturnDate));
+                        command.Parameters.Add(new MySqlParameter("@loan_date", loan.Loan_date));
+                        command.Parameters.Add(new MySqlParameter("@return_date", loan.Return_date));
+                        command.Parameters.Add(new MySqlParameter("@status", loan.Status.ToString()));
                         command.ExecuteNonQuery();
                     }
                 }
@@ -108,7 +111,7 @@ namespace Projekt
                             int user_id = reader.GetInt32("user_id");
                             int book_id = reader.GetInt32("book_id");
                             DateTime loan_date = reader.GetDateTime("loan_date");
-                            DateTime return_date = reader.GetDateTime("return_date");
+                            DateTime? return_date = reader.IsDBNull("return_date") ? null : reader.GetDateTime("return_date");
                             LoanStatus status = Enum.Parse<LoanStatus>(reader.GetString("status"));
 
                             result.Add(new Loan(id, user_id, book_id, loan_date, return_date, status));
@@ -148,7 +151,7 @@ namespace Projekt
                             int user_id = reader.GetInt32("user_id");
                             int book_id = reader.GetInt32("book_id");
                             DateTime loan_date = reader.GetDateTime("loan_date");
-                            DateTime return_date = reader.GetDateTime("return_date");
+                            DateTime? return_date = reader.IsDBNull("return_date") ? null : reader.GetDateTime("return_date");
                             LoanStatus status = Enum.Parse<LoanStatus>(reader.GetString("status"));
 
                             result = new Loan(id, user_id, book_id, loan_date, return_date, status);

@@ -11,15 +11,15 @@ namespace Projekt
     {
         private int id;
         private string title;
-        private int published_year;
+        private int? published_year;
         private bool isAvailable;
 
         public int Id { get => id; set => id = value; }
         public string Title { get => title; set => title = value; }
-        public int Published_year { get => published_year; set => published_year = value; }
+        public int? Published_year { get => published_year; set => published_year = value; }
         public bool IsAvailable { get => isAvailable; set => isAvailable = value; }
 
-        public Book(int id, string title, int published_year, bool isAvailable)
+        public Book(int id, string title, int? published_year, bool isAvailable)
         {
             Id = id;
             Title = title;
@@ -27,7 +27,7 @@ namespace Projekt
             IsAvailable = isAvailable;
         }
 
-        public Book(string title, int published_year, bool isAvailable)
+        public Book(string title, int? published_year, bool isAvailable)
         {
             Id = 0;
             Title = title;
@@ -37,7 +37,7 @@ namespace Projekt
 
         public override string ToString()
         {
-            return $"{Id}. {Title} {IsAvailable}";
+            return $"id: {Id}, title: {Title}, published_year: {Published_year}, available: {IsAvailable}";
         }
     }
 }

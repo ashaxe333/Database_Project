@@ -1,6 +1,8 @@
 create database library;
 use library;
 
+SET autocommit = 1;
+
 -- TABLES
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
