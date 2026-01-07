@@ -18,6 +18,11 @@ namespace WindowsFormsApp1
         private BookDAO bookDAO = new BookDAO();
         private LoanDAO loanDAO = new LoanDAO();
 
+        private AuthorDAO authorDAO = new AuthorDAO();
+
+        private ActiveLoanDAO activeLoanDAO = new ActiveLoanDAO();
+        private PaymentSummaryDAO paymentSummaryDAO = new PaymentSummaryDAO();
+
         public Form1()
         {
             InitializeComponent();
@@ -26,6 +31,7 @@ namespace WindowsFormsApp1
             LoadStatus();
         }
 
+        // Create loan
         private void LoadUsers()
         {
             List<User> users = userDAO.GetAll();
@@ -69,9 +75,37 @@ namespace WindowsFormsApp1
             }
         }
 
+        // imports
+        private void ImportToBooks_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                bookDAO.importCSV(Path.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Text = ex.Message;
+            }
+            
+        }
 
+        // views
+        private void ShowActiveLoans_Click(object sender, EventArgs e)
+        {
+            List<ActiveLoan> activeLoans = activeLoanDAO.GetAll();
+            string output = null;
+            foreach (ActiveLoan activeLoan in activeLoans) output += activeLoan + "\n";
 
+            MessageBox.Text = output;
+        }
+        private void ShowPaymentSummary_Click(object sender, EventArgs e)
+        {
+            List<PaymentSummary> paymentSummaries = paymentSummaryDAO.GetAll();
+            string output = null;
+            foreach (PaymentSummary paymentSummary in paymentSummaries) output += paymentSummary + "\n";
 
+            MessageBox.Text = output;
+        }
 
 
 
@@ -82,5 +116,7 @@ namespace WindowsFormsApp1
         private void BookInput_SelectedIndexChanged(object sender, EventArgs e){}
         private void label1_Click(object sender, EventArgs e){}
         private void label5_Click(object sender, EventArgs e){}
+
+        
     }
 }

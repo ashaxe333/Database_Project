@@ -41,15 +41,19 @@
             this.SubmitBTN = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.MessageBox = new System.Windows.Forms.RichTextBox();
+            this.ImportToBooks = new System.Windows.Forms.Button();
+            this.ImportToAuthors = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.Path = new System.Windows.Forms.TextBox();
+            this.MessageBox = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.ShowPaymentSummary = new System.Windows.Forms.Button();
+            this.ShowActiveLoans = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // UserInput
@@ -141,7 +145,7 @@
             // 
             // SubmitBTN
             // 
-            this.SubmitBTN.Location = new System.Drawing.Point(283, 226);
+            this.SubmitBTN.Location = new System.Drawing.Point(283, 225);
             this.SubmitBTN.Name = "SubmitBTN";
             this.SubmitBTN.Size = new System.Drawing.Size(197, 34);
             this.SubmitBTN.TabIndex = 10;
@@ -171,10 +175,10 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.button2);
-            this.groupBox2.Controls.Add(this.button1);
+            this.groupBox2.Controls.Add(this.ImportToBooks);
+            this.groupBox2.Controls.Add(this.ImportToAuthors);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.textBox1);
+            this.groupBox2.Controls.Add(this.Path);
             this.groupBox2.Location = new System.Drawing.Point(12, 296);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(505, 137);
@@ -182,20 +186,24 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "CSV Data Import";
             // 
-            // textBox1
+            // ImportToBooks
             // 
-            this.textBox1.Location = new System.Drawing.Point(18, 52);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(462, 22);
-            this.textBox1.TabIndex = 0;
+            this.ImportToBooks.Location = new System.Drawing.Point(147, 86);
+            this.ImportToBooks.Name = "ImportToBooks";
+            this.ImportToBooks.Size = new System.Drawing.Size(123, 33);
+            this.ImportToBooks.TabIndex = 3;
+            this.ImportToBooks.Text = "Import to books";
+            this.ImportToBooks.UseVisualStyleBackColor = true;
+            this.ImportToBooks.Click += new System.EventHandler(this.ImportToBooks_Click);
             // 
-            // MessageBox
+            // ImportToAuthors
             // 
-            this.MessageBox.Location = new System.Drawing.Point(6, 21);
-            this.MessageBox.Name = "MessageBox";
-            this.MessageBox.Size = new System.Drawing.Size(532, 333);
-            this.MessageBox.TabIndex = 14;
-            this.MessageBox.Text = "";
+            this.ImportToAuthors.Location = new System.Drawing.Point(18, 86);
+            this.ImportToAuthors.Name = "ImportToAuthors";
+            this.ImportToAuthors.Size = new System.Drawing.Size(123, 33);
+            this.ImportToAuthors.TabIndex = 2;
+            this.ImportToAuthors.Text = "Import to authors";
+            this.ImportToAuthors.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
@@ -206,33 +214,61 @@
             this.label6.TabIndex = 1;
             this.label6.Text = "Path/To/File:";
             // 
-            // button1
+            // Path
             // 
-            this.button1.Location = new System.Drawing.Point(18, 86);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(123, 33);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Import to authors";
-            this.button1.UseVisualStyleBackColor = true;
+            this.Path.Location = new System.Drawing.Point(18, 52);
+            this.Path.Name = "Path";
+            this.Path.Size = new System.Drawing.Size(462, 22);
+            this.Path.TabIndex = 0;
+            // 
+            // MessageBox
+            // 
+            this.MessageBox.Location = new System.Drawing.Point(6, 21);
+            this.MessageBox.Name = "MessageBox";
+            this.MessageBox.Size = new System.Drawing.Size(532, 505);
+            this.MessageBox.TabIndex = 14;
+            this.MessageBox.Text = "";
             // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.MessageBox);
             this.groupBox3.Location = new System.Drawing.Point(523, 12);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(544, 360);
+            this.groupBox3.Size = new System.Drawing.Size(544, 532);
             this.groupBox3.TabIndex = 15;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "OutPut";
             // 
-            // button2
+            // groupBox4
             // 
-            this.button2.Location = new System.Drawing.Point(147, 86);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(123, 33);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "Import to authors";
-            this.button2.UseVisualStyleBackColor = true;
+            this.groupBox4.Controls.Add(this.ShowPaymentSummary);
+            this.groupBox4.Controls.Add(this.ShowActiveLoans);
+            this.groupBox4.Location = new System.Drawing.Point(12, 444);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(505, 100);
+            this.groupBox4.TabIndex = 16;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Views";
+            // 
+            // ShowPaymentSummary
+            // 
+            this.ShowPaymentSummary.Location = new System.Drawing.Point(154, 43);
+            this.ShowPaymentSummary.Name = "ShowPaymentSummary";
+            this.ShowPaymentSummary.Size = new System.Drawing.Size(179, 31);
+            this.ShowPaymentSummary.TabIndex = 1;
+            this.ShowPaymentSummary.Text = "Show Payment Summary";
+            this.ShowPaymentSummary.UseVisualStyleBackColor = true;
+            this.ShowPaymentSummary.Click += new System.EventHandler(this.ShowPaymentSummary_Click);
+            // 
+            // ShowActiveLoans
+            // 
+            this.ShowActiveLoans.Location = new System.Drawing.Point(6, 43);
+            this.ShowActiveLoans.Name = "ShowActiveLoans";
+            this.ShowActiveLoans.Size = new System.Drawing.Size(142, 31);
+            this.ShowActiveLoans.TabIndex = 0;
+            this.ShowActiveLoans.Text = "Show Active Loans";
+            this.ShowActiveLoans.UseVisualStyleBackColor = true;
+            this.ShowActiveLoans.Click += new System.EventHandler(this.ShowActiveLoans_Click);
             // 
             // Form1
             // 
@@ -240,6 +276,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.ClientSize = new System.Drawing.Size(1079, 556);
+            this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
@@ -250,6 +287,7 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -269,12 +307,15 @@
         private System.Windows.Forms.Button SubmitBTN;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox Path;
         private System.Windows.Forms.RichTextBox MessageBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ImportToAuthors;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button ImportToBooks;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.Button ShowPaymentSummary;
+        private System.Windows.Forms.Button ShowActiveLoans;
     }
 }
 

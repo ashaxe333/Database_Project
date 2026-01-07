@@ -170,12 +170,12 @@ namespace WindowsFormsApp1.DAO
         /// Imports data from CSV file
         /// </summary>
         /// <returns> Messages </returns>
-        public string importCSV()
+        public string importCSV(string path)
         {
             try
             {
                 string line;
-                using (StreamReader reader = new StreamReader("knihy.csv"))
+                using (StreamReader reader = new StreamReader(path))
                 {
                     bool help = false;
                     line = reader.ReadLine();

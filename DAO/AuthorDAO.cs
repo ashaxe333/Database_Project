@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using WindowsFormsApp1.Database;
 using WindowsFormsApp1.Models;
 
@@ -143,6 +144,34 @@ namespace WindowsFormsApp1.DAO
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Imports data from CSV file
+        /// </summary>
+        /// <returns>Messages</returns>
+        public string importCSV(string path)
+        {
+            try
+            {
+                string line;
+                using (StreamReader reader = new StreamReader(path))
+                {
+                    line = reader.ReadLine();
+
+                    while (line != null)
+                    {
+                        Save(new Author(line));
+                        line = reader.ReadLine();
+                    }
+                    reader.Close();
+                    return "Import done";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Failed to load file";
+            }
         }
 
         public override string ToString()
