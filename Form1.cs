@@ -81,12 +81,28 @@ namespace WindowsFormsApp1
             try
             {
                 bookDAO.importCSV(Path.Text);
+                Path.Clear();
             }
             catch (Exception ex)
             {
                 MessageBox.Text = ex.Message;
+                Path.Clear();
             }
             
+        }
+
+        private void ImportToAuthors_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                bookDAO.importCSV(Path.Text);
+                Path.Clear();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Text = ex.Message;
+                Path.Clear();
+            }
         }
 
         // views
@@ -116,7 +132,5 @@ namespace WindowsFormsApp1
         private void BookInput_SelectedIndexChanged(object sender, EventArgs e){}
         private void label1_Click(object sender, EventArgs e){}
         private void label5_Click(object sender, EventArgs e){}
-
-        
     }
 }

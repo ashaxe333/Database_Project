@@ -204,6 +204,7 @@
             this.ImportToAuthors.TabIndex = 2;
             this.ImportToAuthors.Text = "Import to authors";
             this.ImportToAuthors.UseVisualStyleBackColor = true;
+            this.ImportToAuthors.Click += new System.EventHandler(this.ImportToAuthors_Click);
             // 
             // label6
             // 
