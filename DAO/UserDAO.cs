@@ -1,6 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using WindowsFormsApp1.Database;
+using WindowsFormsApp1.Models;
 
-namespace Projekt
+namespace WindowsFormsApp1.DAO
 {
     public class UserDAO : IDAO<User>
     {
@@ -127,9 +131,9 @@ namespace Projekt
         /// </summary>
         /// <param name="id"> user id </param>
         /// <returns> User object </returns>
-        public User? GetById(int id)
+        public User GetById(int id)
         {
-            User? result = null;
+            User result = null;
             try
             {
                 Console.WriteLine("getting user");
@@ -162,7 +166,7 @@ namespace Projekt
             return result;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Users Table";
         }

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MySqlX.XDevAPI.Common;
+using WindowsFormsApp1.Models;
+using WindowsFormsApp1.Database;
 
-namespace Projekt
+namespace WindowsFormsApp1.DAO
 {
     public class PaymentDAO : IDAO<Payment>
     {
@@ -131,9 +133,9 @@ namespace Projekt
         /// </summary>
         /// <param name="id"> payment id </param>
         /// <returns> Payment object </returns>
-        public Payment? GetById(int id)
+        public Payment GetById(int id)
         {
-            Payment? result = null;
+            Payment result = null;
             try
             {
                 Console.WriteLine("getting payment");
@@ -165,7 +167,7 @@ namespace Projekt
             return result;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Payment Table";
         }

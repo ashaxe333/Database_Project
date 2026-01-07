@@ -1,6 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
+using System;
+using System.Collections.Generic;
+using WindowsFormsApp1.Database;
+using WindowsFormsApp1.Models;
 
-namespace Projekt
+namespace WindowsFormsApp1.DAO
 {
     public class AuthorDAO : IDAO<Author>
     {
@@ -13,7 +17,6 @@ namespace Projekt
             try
             {
                 MySqlConnection conn = DatabaseSingleton.GetInstance();
-
                 Console.WriteLine("deleting author");
                 using (MySqlCommand command = new MySqlCommand("DELETE FROM authors WHERE id = @id", conn))
                 {
@@ -77,7 +80,7 @@ namespace Projekt
         public List<Author> GetAll()
         {
             List<Author> result = new List<Author>();
-
+            
             try
             {
                 MySqlConnection conn = DatabaseSingleton.GetInstance();
@@ -110,9 +113,9 @@ namespace Projekt
         /// </summary>
         /// <param name="id"> author id </param>
         /// <returns> Author object </returns>
-        public Author? GetById(int id)
+        public Author GetById(int id)
         {
-            Author? result = null;
+            Author result = null;
             try
             {
                 Console.WriteLine("getting author");
@@ -142,7 +145,7 @@ namespace Projekt
             return result;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Authors Table";
         }

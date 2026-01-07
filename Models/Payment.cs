@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projekt
+namespace WindowsFormsApp1.Models
 {
     public class Payment
     {
@@ -33,7 +33,7 @@ namespace Projekt
             Payment_date = payment_date;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return $"id: {id}, loan_id: {loan_id}, amount: {amount}, payment_date: {payment_date}";
         }

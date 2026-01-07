@@ -1,4 +1,6 @@
-﻿using System;
+﻿using WindowsFormsApp1.DAO;
+using WindowsFormsApp1.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO.IsolatedStorage;
@@ -9,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Projekt
+namespace WindowsFormsApp1
 {
     public class Prompt
     {
@@ -43,10 +45,10 @@ namespace Projekt
             // =========================
             /*
             userDAO.Save(new User("Jan Novak", "jan.novak@example.com", true, DateTime.Now));
-            userDAO.Delete(15);
+            userDAO.Delete(16);
             Console.WriteLine(userDAO.GetById(1));
             userDAO.Save(new User("John Smith", "john.smith@example.com", true, DateTime.Now));
-
+            
             List<User> users = userDAO.GetAll();
             foreach (User user in users)
             {
@@ -126,11 +128,11 @@ namespace Projekt
             /*
             foreach (ActiveLoan activeLoan in activeLoanDAO.GetAll())
                 Console.WriteLine(activeLoan);
-            */
+            
             
             foreach (PaymentSummary paymentSummary in paymentSummaryDAO.GetAll())
                 Console.WriteLine(paymentSummary);
-            
+            */
 
             Console.WriteLine("=== DATABASE TEST END ===");
         }

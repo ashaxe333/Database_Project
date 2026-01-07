@@ -1,4 +1,6 @@
-﻿namespace Projekt
+﻿using System;
+
+namespace WindowsFormsApp1.Models
 {
     public class Loan
     {

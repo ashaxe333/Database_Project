@@ -1,8 +1,13 @@
 ﻿using MySql.Data.MySqlClient;
+using WindowsFormsApp1.Database;
+using WindowsFormsApp1.Models;
 using System.Data;
 using System.Globalization;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
-namespace Projekt
+namespace WindowsFormsApp1.DAO
 {
     public class BookDAO : IDAO<Book>
     {
@@ -106,7 +111,7 @@ namespace Projekt
                         {
                             int id = reader.GetInt32("id");
                             string title = reader.GetString("title");
-                            int? published_year = reader.IsDBNull("published_year") ? null : reader.GetInt32("published_year");
+                            int? published_year = reader.IsDBNull(reader.GetOrdinal("published_year")) ? (int?)null : reader.GetInt32("published_year");
                             bool available = reader.GetBoolean("available");
 
                             result.Add(new Book(id, title, published_year, available));
@@ -127,9 +132,9 @@ namespace Projekt
         /// </summary>
         /// <param name="id"> book id </param>
         /// <returns> Book object </returns>
-        public Book? GetById(int id)
+        public Book GetById(int id)
         {
-            Book? result = null;
+            Book result = null;
             try
             {
                 Console.WriteLine($"getting book with id {id}");
@@ -144,7 +149,7 @@ namespace Projekt
                         if (reader.Read())
                         {
                             string title = reader.GetString("title");
-                            int? published_year = reader.IsDBNull("published_year") ? null : reader.GetInt32("published_year");
+                            int? published_year = reader.IsDBNull(reader.GetOrdinal("published_year")) ? (int?)null : reader.GetInt32("published_year");
                             bool available = reader.GetBoolean("available");
 
                             result = new Book(id, title, published_year, available);
@@ -202,7 +207,7 @@ namespace Projekt
             }
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Books Table";
         }

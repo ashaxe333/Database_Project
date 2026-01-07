@@ -1,7 +1,11 @@
 ﻿using MySql.Data.MySqlClient;
+using WindowsFormsApp1.Database;
+using WindowsFormsApp1.Models;
 using System.Data;
+using System;
+using System.Collections.Generic;
 
-namespace Projekt
+namespace WindowsFormsApp1.DAO
 {
     public class LoanDAO : IDAO<Loan>
     {
@@ -111,8 +115,8 @@ namespace Projekt
                             int user_id = reader.GetInt32("user_id");
                             int book_id = reader.GetInt32("book_id");
                             DateTime loan_date = reader.GetDateTime("loan_date");
-                            DateTime? return_date = reader.IsDBNull("return_date") ? null : reader.GetDateTime("return_date");
-                            LoanStatus status = Enum.Parse<LoanStatus>(reader.GetString("status"));
+                            DateTime? return_date = reader.IsDBNull(reader.GetOrdinal("return_date")) ? (DateTime?)null : reader.GetDateTime("return_date");
+                            LoanStatus status = (LoanStatus)Enum.Parse(typeof(LoanStatus), reader.GetString("status"));
 
                             result.Add(new Loan(id, user_id, book_id, loan_date, return_date, status));
                         }
@@ -132,9 +136,9 @@ namespace Projekt
         /// </summary>
         /// <param name="id"> loan id </param>
         /// <returns> Loan object </returns>
-        public Loan? GetById(int id)
+        public Loan GetById(int id)
         {
-            Loan? result = null;
+            Loan result = null;
             try
             {
                 Console.WriteLine("getting loan");
@@ -151,8 +155,8 @@ namespace Projekt
                             int user_id = reader.GetInt32("user_id");
                             int book_id = reader.GetInt32("book_id");
                             DateTime loan_date = reader.GetDateTime("loan_date");
-                            DateTime? return_date = reader.IsDBNull("return_date") ? null : reader.GetDateTime("return_date");
-                            LoanStatus status = Enum.Parse<LoanStatus>(reader.GetString("status"));
+                            DateTime? return_date = reader.IsDBNull(reader.GetOrdinal("return_date")) ? (DateTime?)null : reader.GetDateTime("return_date");
+                            LoanStatus status = (LoanStatus)Enum.Parse(typeof(LoanStatus), reader.GetString("status"));
 
                             result = new Loan(id, user_id, book_id, loan_date, return_date, status);
                         }
@@ -168,7 +172,7 @@ namespace Projekt
             return result;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Loans Table";
         }

@@ -1,11 +1,22 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace Projekt
+namespace WindowsFormsApp1
 {
-    public class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// Hlavní vstupní bod aplikace.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Form1());
             Prompt prompt = new Prompt();
         }
     }

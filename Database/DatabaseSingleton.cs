@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projekt
+namespace WindowsFormsApp1.Database
 {
     /// <summary>
     /// 
     /// </summary>
     public class DatabaseSingleton
     {
-        private static MySqlConnection? conn = null;
+        private static MySqlConnection conn = null;
         private DatabaseSingleton()
         {
 
@@ -35,12 +35,11 @@ namespace Projekt
                 try
                 {
                     conn.Open();
-                    Console.WriteLine($"Database '{consStringBuilder.Database}' connected successfully!"); // <-- tady
+                    Console.WriteLine($"Database '{consStringBuilder.Database}' connected successfully!");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error connecting to database: " + ex.Message);
-                    throw; // můžeš nechat padnout výjimku dál
                 }
             }
             return conn;

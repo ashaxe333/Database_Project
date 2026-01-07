@@ -1,11 +1,13 @@
 ﻿using MySql.Data.MySqlClient;
+using WindowsFormsApp1.Database;
+using WindowsFormsApp1.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projekt
+namespace WindowsFormsApp1.DAO
 {
     public class Book_AuthorsDAO : IDAO<Book_Authors>
     {
@@ -118,9 +120,9 @@ namespace Projekt
         /// </summary>
         /// <param name="id"> book_Authors id </param>
         /// <returns> Book_Authors object </returns>
-        public Book_Authors? GetById(int id)
+        public Book_Authors GetById(int id)
         {
-            Book_Authors? result = null;
+            Book_Authors result = null;
             try
             {
                 Console.WriteLine("getting book_authors");
@@ -151,7 +153,7 @@ namespace Projekt
             return result;
         }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return "Book_Authors Table";
         }

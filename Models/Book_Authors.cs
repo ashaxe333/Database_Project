@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projekt
+namespace WindowsFormsApp1.Models
 {
     public class Book_Authors
     {
@@ -30,7 +30,7 @@ namespace Projekt
         public int Book_id { get => book_id; set => book_id = value; }
         public int Author_id { get => author_id; set => author_id = value; }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return $"id: {Id}, book_id: {Book_id}, author_id: {Author_id}";
         }
