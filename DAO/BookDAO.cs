@@ -6,6 +6,7 @@ using System.Globalization;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.CodeDom;
 
 namespace WindowsFormsApp1.DAO
 {
@@ -17,7 +18,6 @@ namespace WindowsFormsApp1.DAO
         /// <param name="id"> book id </param>
         public void Delete(int id)
         {
-            Console.WriteLine("deleting book");
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
             using (MySqlCommand command = new MySqlCommand("DELETE FROM books WHERE id = @id", conn))
@@ -31,18 +31,20 @@ namespace WindowsFormsApp1.DAO
         /// Inserts or updates book based on id
         /// </summary>
         /// <param name="book"> book to insert or update </param>
-        public void Save(Book book)
+        public void Save(Book book, MySqlTransaction transaction)
         {
 
             MySqlConnection conn = DatabaseSingleton.GetInstance();
-
             MySqlCommand command = null;
-
 
             if (book.Id < 1)
             {
-                Console.WriteLine("inserting book");
-                using (command = new MySqlCommand("INSERT INTO books (title, published_year, available) VALUES (@title, @published_year, @isAvailable)", conn))
+                if (transaction != null)
+                    command = new MySqlCommand("INSERT INTO books (title, published_year, available) VALUES (@title, @published_year, @isAvailable)", transaction.Connection, transaction);
+                else
+                    command = new MySqlCommand("INSERT INTO books (title, published_year, available) VALUES (@title, @published_year, @isAvailable)", conn);
+
+                using (command)
                 {
                     command.Parameters.Add(new MySqlParameter("@title", book.Title));
                     command.Parameters.Add(new MySqlParameter("@published_year", book.Published_year));
@@ -55,8 +57,12 @@ namespace WindowsFormsApp1.DAO
             }
             else
             {
-                Console.WriteLine("updating book");
-                using (command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_year, available = @isAvailable WHERE id = @id", conn))
+                if (transaction != null)
+                    command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_year, available = @isAvailable WHERE id = @id", transaction.Connection, transaction);
+                else 
+                    command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_year, available = @isAvailable WHERE id = @id", conn);
+
+                using (command)
                 {
                     command.Parameters.Add(new MySqlParameter("@id", book.Id));
                     command.Parameters.Add(new MySqlParameter("@title", book.Title));
@@ -76,7 +82,6 @@ namespace WindowsFormsApp1.DAO
             List<Book> result = new List<Book>();
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            Console.WriteLine("get all books");
             using (MySqlCommand command = new MySqlCommand("SELECT id, title, published_year, available  FROM books", conn)) //1 connection, 1 reader v jeden moment
             {
                 using (MySqlDataReader reader = command.ExecuteReader())
@@ -104,7 +109,6 @@ namespace WindowsFormsApp1.DAO
         public Book GetById(int id)
         {
             Book result = null;
-            Console.WriteLine($"getting book with id {id}");
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
             using (MySqlCommand command = new MySqlCommand("SELECT title, published_year, available FROM books WHERE id = @id", conn))
@@ -121,7 +125,7 @@ namespace WindowsFormsApp1.DAO
 
                         result = new Book(id, title, published_year, available);
                     }
-                    else Console.WriteLine($"Book with id {id} does not exist");
+                    else throw new Exception($"Book with id {id} does not exist");
                 }
             }
 
@@ -132,7 +136,7 @@ namespace WindowsFormsApp1.DAO
         /// Imports data from CSV file
         /// </summary>
         /// <returns> Messages </returns>
-        public string importCSV(string path)
+        public void importCSV(string path)
         {
             string line;
             using (StreamReader reader = new StreamReader(path))
@@ -147,17 +151,14 @@ namespace WindowsFormsApp1.DAO
 
                     if (int.TryParse(parts[1], out int published_year) && bool.TryParse(parts[2], out bool isAvailable))
                     {
-                        Save(new Book(parts[0], published_year, isAvailable));
+                        Save(new Book(parts[0], published_year, isAvailable), null);
                     }
                     else
                     {
                         help = true;
-                        return "Invalid datatype";
                     }
                     line = reader.ReadLine();
                 }
-                if (!help) return "Import done";
-                else return "Invalid datatype";
             }
         }
 

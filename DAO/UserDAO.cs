@@ -28,7 +28,7 @@ namespace WindowsFormsApp1.DAO
         /// Inserts or updates user based on id
         /// </summary>
         /// <param name="user"> user to update or insert </param>
-        public void Save(User user)
+        public void Save(User user, MySqlTransaction transaction)
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 

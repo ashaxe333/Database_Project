@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsApp1.DAO;
+using WindowsFormsApp1.Database;
 using WindowsFormsApp1.Models;
 
 namespace WindowsFormsApp1
@@ -20,6 +22,7 @@ namespace WindowsFormsApp1
         private LoanDAO loanDAO = new LoanDAO();
 
         private AuthorDAO authorDAO = new AuthorDAO();
+        private Book_AuthorsDAO book_AuthorsDAO = new Book_AuthorsDAO();
 
         private ActiveLoanDAO activeLoanDAO = new ActiveLoanDAO();
         private PaymentSummaryDAO paymentSummaryDAO = new PaymentSummaryDAO();
@@ -66,7 +69,7 @@ namespace WindowsFormsApp1
                 DateTime? returnDate = ReturnDateInput.Value;
 
                 Loan newLoan = new Loan(selectedUser.Id, selectedBook.Id, loanDate, returnDate, status);
-                loanDAO.Save(newLoan);
+                loanDAO.Save(newLoan, null);
 
                 MessageBox.Text = "Loan successfully created!";
             }
@@ -78,11 +81,15 @@ namespace WindowsFormsApp1
 
 
         // Create new Book with new Author
-
         private void Submit2_Click(object sender, EventArgs e)
         {
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
+            MySqlTransaction transaction = null;
+
             try
             {
+                transaction = conn.BeginTransaction();
+
                 string authorName = AuthorNameInput.Text;
                 string bookTitle = BookTitleInput.Text;
                 int bookPublishedYear = int.Parse(BookPublishedYearInput.Text);
@@ -92,11 +99,21 @@ namespace WindowsFormsApp1
                     throw new Exception("Invalid name");
                 }
 
-                bookDAO.Save(new Book(bookTitle, bookPublishedYear, true));
-                authorDAO.Save(new Author(authorName));
+                Book newBook = new Book(bookTitle, bookPublishedYear, true);
+                Author newAuthor = new Author(authorName);
+
+                bookDAO.Save(newBook, transaction);
+                authorDAO.Save(newAuthor, transaction);
+
+                Book_Authors newBA = new Book_Authors(newBook.Id, newAuthor.Id);
+                book_AuthorsDAO.Save(newBA, transaction);
+
+                transaction.Commit();
+                MessageBox.Text = "Book and Author successfully added!";
             }
             catch (Exception ex)
             {
+                transaction?.Rollback();
                 MessageBox.Text = "Failed \n" + ex.Message;
             }
             
@@ -170,10 +187,6 @@ namespace WindowsFormsApp1
         private void BookInput_SelectedIndexChanged(object sender, EventArgs e){}
         private void label1_Click(object sender, EventArgs e){}
         private void label5_Click(object sender, EventArgs e){}
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
+        private void textBox1_TextChanged(object sender, EventArgs e) {}
     }
 }

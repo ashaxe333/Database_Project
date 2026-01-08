@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.CodeDom;
 
 namespace WindowsFormsApp1.DAO
 {
@@ -19,7 +20,6 @@ namespace WindowsFormsApp1.DAO
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            Console.WriteLine("deleting book_authors");
             using (MySqlCommand command = new MySqlCommand("DELETE FROM book_authors WHERE id = @id", conn))
             {
                 command.Parameters.Add(new MySqlParameter("@id", id));
@@ -31,7 +31,7 @@ namespace WindowsFormsApp1.DAO
         /// Inserts or updates book_author based on id
         /// </summary>
         /// <param name="book_authors"> book_author to insert or update </param>
-        public void Save(Book_Authors book_authors)
+        public void Save(Book_Authors book_authors, MySqlTransaction transaction)
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
@@ -39,8 +39,12 @@ namespace WindowsFormsApp1.DAO
 
             if (book_authors.Id < 1)
             {
-                Console.WriteLine("inserting book_authors");
-                using (command = new MySqlCommand("INSERT INTO book_authors (book_id, author_id) VALUES (@book_id, @author_id)", conn))
+                if (transaction != null)
+                    command = new MySqlCommand("INSERT INTO book_authors (book_id, author_id) VALUES (@book_id, @author_id)", transaction.Connection, transaction);
+                else
+                    command = new MySqlCommand("INSERT INTO book_authors (book_id, author_id) VALUES (@book_id, @author_id)", conn);
+
+                using (command)
                 {
                     command.Parameters.Add(new MySqlParameter("@book_id", book_authors.Book_id));
                     command.Parameters.Add(new MySqlParameter("@author_id", book_authors.Author_id));
@@ -52,8 +56,12 @@ namespace WindowsFormsApp1.DAO
             }
             else
             {
-                Console.WriteLine("updating book_authors");
-                using (command = new MySqlCommand("UPDATE book_authors SET book_id = @book_id, author_id = @author_id WHERE id = @id", conn))
+                if (transaction != null)
+                    command = new MySqlCommand("UPDATE book_authors SET book_id = @book_id, author_id = @author_id WHERE id = @id", transaction.Connection, transaction);
+                else
+                    command = new MySqlCommand("UPDATE book_authors SET book_id = @book_id, author_id = @author_id WHERE id = @id", conn);
+
+                using (command)
                 {
                     command.Parameters.Add(new MySqlParameter("@id", book_authors.Id));
                     command.Parameters.Add(new MySqlParameter("@book_id", book_authors.Book_id));
@@ -72,7 +80,6 @@ namespace WindowsFormsApp1.DAO
             List<Book_Authors> result = new List<Book_Authors>();
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            Console.WriteLine("get all book_authors");
             using (MySqlCommand command = new MySqlCommand("SELECT id, book_id, author_id FROM book_authors", conn)) //1 connection, 1 reader v jeden moment
             {
                 using (MySqlDataReader reader = command.ExecuteReader())
@@ -99,7 +106,6 @@ namespace WindowsFormsApp1.DAO
         public Book_Authors GetById(int id)
         {
             Book_Authors result = null;
-            Console.WriteLine("getting book_authors");
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
             using (MySqlCommand command = new MySqlCommand("SELECT book_id, author_id FROM book_authors WHERE id = @id", conn))
@@ -115,7 +121,7 @@ namespace WindowsFormsApp1.DAO
 
                         result = new Book_Authors(id, book_id, author_id);
                     }
-                    else Console.WriteLine($"book_authors with id {id} does not exist");
+                    else throw new Exception($"book_authors with id {id} does not exist");
                 }
             }
 

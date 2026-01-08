@@ -1,6 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using WindowsFormsApp1.Database;
 using WindowsFormsApp1.Models;
@@ -16,7 +17,7 @@ namespace WindowsFormsApp1.DAO
         public void Delete(int id)
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
-            Console.WriteLine("deleting author");
+
             using (MySqlCommand command = new MySqlCommand("DELETE FROM authors WHERE id = @id", conn))
             {
                 command.Parameters.Add(new MySqlParameter("@id", id));
@@ -28,16 +29,19 @@ namespace WindowsFormsApp1.DAO
         /// Inserts or updates author based on id
         /// </summary>
         /// <param name="author"> author to insert or update </param>
-        public void Save(Author author)
+        public void Save(Author author, MySqlTransaction transaction)
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
-
             MySqlCommand command = null;
 
             if (author.Id < 1)
             {
-                Console.WriteLine("inserting author");
-                using (command = new MySqlCommand("INSERT INTO authors (name) VALUES (@name)", conn))
+                if(transaction != null) 
+                    command = new MySqlCommand("INSERT INTO authors (name) VALUES (@name)", transaction.Connection, transaction);
+                else 
+                    command = new MySqlCommand("INSERT INTO authors (name) VALUES (@name)", conn);
+
+                using (command)
                 {
                     command.Parameters.Add(new MySqlParameter("@name", author.Name));
                     command.ExecuteNonQuery();
@@ -48,8 +52,12 @@ namespace WindowsFormsApp1.DAO
             }
             else
             {
-                Console.WriteLine("updating author");
-                using (command = new MySqlCommand("UPDATE authors SET name = @name WHERE id = @id", conn))
+                if(transaction != null)
+                    command = new MySqlCommand("UPDATE authors SET name = @name WHERE id = @id", transaction.Connection, transaction);
+                else
+                    command = new MySqlCommand("UPDATE authors SET name = @name WHERE id = @id", conn);
+
+                using (command)
                 {
                     command.Parameters.Add(new MySqlParameter("@id", author.Id));
                     command.Parameters.Add(new MySqlParameter("@name", author.Name));
@@ -67,7 +75,6 @@ namespace WindowsFormsApp1.DAO
             List<Author> result = new List<Author>();
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            Console.WriteLine("get all authors");
             using (MySqlCommand command = new MySqlCommand("SELECT id, name FROM authors", conn)) //1 connection, 1 reader v jeden moment
             {
                 using (MySqlDataReader reader = command.ExecuteReader())
@@ -93,7 +100,6 @@ namespace WindowsFormsApp1.DAO
         public Author GetById(int id)
         {
             Author result = null;
-            Console.WriteLine("getting author");
             MySqlConnection conn = DatabaseSingleton.GetInstance();
 
             using (MySqlCommand command = new MySqlCommand("SELECT * FROM authors WHERE id = @id", conn))
@@ -108,7 +114,7 @@ namespace WindowsFormsApp1.DAO
 
                         result = new Author(id, name);
                     }
-                    else Console.WriteLine($"Author with id {id} does not exist");
+                    else throw new Exception($"Author with id {id} does not exist");
                 }
             }
 
@@ -119,7 +125,7 @@ namespace WindowsFormsApp1.DAO
         /// Imports data from CSV file
         /// </summary>
         /// <returns>Messages</returns>
-        public string importCSV(string path)
+        public void importCSV(string path)
         {
             string line;
             using (StreamReader reader = new StreamReader(path))
@@ -128,11 +134,10 @@ namespace WindowsFormsApp1.DAO
 
                 while (line != null)
                 {
-                    Save(new Author(line));
+                    Save(new Author(line), null);
                     line = reader.ReadLine();
                 }
                 reader.Close();
-                return "Import done";
             }
         }
 

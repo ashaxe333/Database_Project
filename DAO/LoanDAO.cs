@@ -29,7 +29,7 @@ namespace WindowsFormsApp1.DAO
         /// Innserts or updates loan based on id
         /// </summary>
         /// <param name="loan"> lloan to insert or update </param>
-        public void Save(Loan loan)
+        public void Save(Loan loan, MySqlTransaction transaction)
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
             MySqlCommand command = null;

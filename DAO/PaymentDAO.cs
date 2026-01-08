@@ -32,7 +32,7 @@ namespace WindowsFormsApp1.DAO
         /// Inserts or updates pament based on id
         /// </summary>
         /// <param name="payment"> payment to insert or update </param>
-        public void Save(Payment payment)
+        public void Save(Payment payment, MySqlTransaction transaction)
         {
 
             MySqlConnection conn = DatabaseSingleton.GetInstance();
