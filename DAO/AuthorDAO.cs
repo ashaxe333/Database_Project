@@ -15,20 +15,12 @@ namespace WindowsFormsApp1.DAO
         /// <param name="id"> author id </param>
         public void Delete(int id)
         {
-            try
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine("deleting author");
+            using (MySqlCommand command = new MySqlCommand("DELETE FROM authors WHERE id = @id", conn))
             {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
-                Console.WriteLine("deleting author");
-                using (MySqlCommand command = new MySqlCommand("DELETE FROM authors WHERE id = @id", conn))
-                {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-                    command.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Currently used as foreign key -> cannot be deleted");
+                command.Parameters.Add(new MySqlParameter("@id", id));
+                command.ExecuteNonQuery();
             }
         }
 
@@ -56,20 +48,12 @@ namespace WindowsFormsApp1.DAO
             }
             else
             {
-                try
+                Console.WriteLine("updating author");
+                using (command = new MySqlCommand("UPDATE authors SET name = @name WHERE id = @id", conn))
                 {
-                    Console.WriteLine("updating author");
-                    using (command = new MySqlCommand("UPDATE authors SET name = @name WHERE id = @id", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@id", author.Id));
-                        command.Parameters.Add(new MySqlParameter("@name", author.Name));
-                        command.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("Selected id doesnt exist or one of foreign keys cannot be added -> object doesnt exist");
+                    command.Parameters.Add(new MySqlParameter("@id", author.Id));
+                    command.Parameters.Add(new MySqlParameter("@name", author.Name));
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -81,29 +65,21 @@ namespace WindowsFormsApp1.DAO
         public List<Author> GetAll()
         {
             List<Author> result = new List<Author>();
-            
-            try
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
+
+            Console.WriteLine("get all authors");
+            using (MySqlCommand command = new MySqlCommand("SELECT id, name FROM authors", conn)) //1 connection, 1 reader v jeden moment
             {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
-
-                Console.WriteLine("get all authors");
-                using (MySqlCommand command = new MySqlCommand("SELECT id, name FROM authors", conn)) //1 connection, 1 reader v jeden moment
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            int id = reader.GetInt32("id");
-                            string name = reader.GetString("name");
+                        int id = reader.GetInt32("id");
+                        string name = reader.GetString("name");
 
-                            result.Add(new Author(id, name));
-                        }
+                        result.Add(new Author(id, name));
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;
@@ -117,30 +93,23 @@ namespace WindowsFormsApp1.DAO
         public Author GetById(int id)
         {
             Author result = null;
-            try
-            {
-                Console.WriteLine("getting author");
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine("getting author");
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("SELECT * FROM authors WHERE id = @id", conn))
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM authors WHERE id = @id", conn))
+            {
+                command.Parameters.Add(new MySqlParameter("@id", id));
+
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            string name = reader.GetString("name");
+                        string name = reader.GetString("name");
 
-                            result = new Author(id, name);
-                        }
-                        else Console.WriteLine($"Author with id {id} does not exist");
+                        result = new Author(id, name);
                     }
+                    else Console.WriteLine($"Author with id {id} does not exist");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;
@@ -152,25 +121,18 @@ namespace WindowsFormsApp1.DAO
         /// <returns>Messages</returns>
         public string importCSV(string path)
         {
-            try
+            string line;
+            using (StreamReader reader = new StreamReader(path))
             {
-                string line;
-                using (StreamReader reader = new StreamReader(path))
-                {
-                    line = reader.ReadLine();
+                line = reader.ReadLine();
 
-                    while (line != null)
-                    {
-                        Save(new Author(line));
-                        line = reader.ReadLine();
-                    }
-                    reader.Close();
-                    return "Import done";
+                while (line != null)
+                {
+                    Save(new Author(line));
+                    line = reader.ReadLine();
                 }
-            }
-            catch (Exception ex)
-            {
-                return "Failed to load file";
+                reader.Close();
+                return "Import done";
             }
         }
 

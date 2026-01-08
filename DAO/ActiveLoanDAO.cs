@@ -18,44 +18,25 @@ namespace WindowsFormsApp1.DAO
         public List<ActiveLoan> GetAll()
         {
             List<ActiveLoan> result = new List<ActiveLoan>();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            try
+            Console.WriteLine("view 'view_active_loans':");
+            using (MySqlCommand command = new MySqlCommand("SELECT * FROM view_active_loans", conn))
             {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
-
-                Console.WriteLine("view 'view_active_loans':");
-                using (MySqlCommand command = new MySqlCommand("SELECT * FROM view_active_loans", conn))
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        result.Add(new ActiveLoan
                         {
-                            /*
-                            LoanStatus status = LoanStatus.RETURNED;
-
-                            int statusIndex = reader.GetOrdinal("status");
-                            if (!reader.IsDBNull(statusIndex))
-                            {
-                                string statusStr = reader.GetString(statusIndex);
-                                Enum.TryParse(statusStr, out status);
-                            }
-                            */
-
-                            result.Add(new ActiveLoan
-                            {
-                                Loan_id = reader.GetInt32("loan_id"),
-                                User_name = reader.GetString("user_name"),
-                                Book_title = reader.GetString("book_title"),
-                                Loan_date = reader.GetDateTime("loan_date"),
-                                Status = (LoanStatus)Enum.Parse(typeof(LoanStatus), reader.GetString("status"))
-                            });
-                        }
+                            Loan_id = reader.GetInt32("loan_id"),
+                            User_name = reader.GetString("user_name"),
+                            Book_title = reader.GetString("book_title"),
+                            Loan_date = reader.GetDateTime("loan_date"),
+                            Status = (LoanStatus)Enum.Parse(typeof(LoanStatus), reader.GetString("status"))
+                        });
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;

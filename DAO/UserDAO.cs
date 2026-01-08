@@ -14,21 +14,13 @@ namespace WindowsFormsApp1.DAO
         /// <param name="id"> user id </param>
         public void Delete(int id)
         {
-            try
-            {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                Console.WriteLine("deleting user");
-                using (MySqlCommand command = new MySqlCommand("DELETE FROM users WHERE id = @id", conn))
-                {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-                    command.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
+            Console.WriteLine("deleting user");
+            using (MySqlCommand command = new MySqlCommand("DELETE FROM users WHERE id = @id", conn))
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Currently used as foreign key -> cannot be deleted");
+                command.Parameters.Add(new MySqlParameter("@id", id));
+                command.ExecuteNonQuery();
             }
         }
 
@@ -44,46 +36,30 @@ namespace WindowsFormsApp1.DAO
 
             if (user.Id < 1)
             {
-                try
+                Console.WriteLine("inserting user");
+                using (command = new MySqlCommand("INSERT INTO users (name, email, is_active, created_at) VALUES (@name, @email, @is_active, @created_at)", conn))
                 {
-                    Console.WriteLine("inserting user");
-                    using (command = new MySqlCommand("INSERT INTO users (name, email, is_active, created_at) VALUES (@name, @email, @is_active, @created_at)", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@name", user.Name));
-                        command.Parameters.Add(new MySqlParameter("@email", user.Email));
-                        command.Parameters.Add(new MySqlParameter("@is_active", user.Is_active));
-                        command.Parameters.Add(new MySqlParameter("@created_at", user.Created_at));
-                        command.ExecuteNonQuery();
+                    command.Parameters.Add(new MySqlParameter("@name", user.Name));
+                    command.Parameters.Add(new MySqlParameter("@email", user.Email));
+                    command.Parameters.Add(new MySqlParameter("@is_active", user.Is_active));
+                    command.Parameters.Add(new MySqlParameter("@created_at", user.Created_at));
+                    command.ExecuteNonQuery();
 
-                        command.CommandText = "Select LAST_INSERT_ID()";
-                        user.Id = Convert.ToInt32(command.ExecuteScalar());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("One of foreign keys cannot be added -> object doesnt exist");
+                    command.CommandText = "Select LAST_INSERT_ID()";
+                    user.Id = Convert.ToInt32(command.ExecuteScalar());
                 }
             }
             else
             {
-                try
+                Console.WriteLine("updating user");
+                using (command = new MySqlCommand("UPDATE users SET name = @name, email = @email, is_active = @is_active, created_at = @created_at WHERE id = @id", conn))
                 {
-                    Console.WriteLine("updating user");
-                    using (command = new MySqlCommand("UPDATE users SET name = @name, email = @email, is_active = @is_active, created_at = @created_at WHERE id = @id", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@id", user.Id));
-                        command.Parameters.Add(new MySqlParameter("@name", user.Name));
-                        command.Parameters.Add(new MySqlParameter("@email", user.Email));
-                        command.Parameters.Add(new MySqlParameter("@is_active", user.Is_active));
-                        command.Parameters.Add(new MySqlParameter("@created_at", user.Created_at));
-                        command.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("Selected id doesnt exist or one of foreign keys cannot be added -> object doesnt exist");
+                    command.Parameters.Add(new MySqlParameter("@id", user.Id));
+                    command.Parameters.Add(new MySqlParameter("@name", user.Name));
+                    command.Parameters.Add(new MySqlParameter("@email", user.Email));
+                    command.Parameters.Add(new MySqlParameter("@is_active", user.Is_active));
+                    command.Parameters.Add(new MySqlParameter("@created_at", user.Created_at));
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -95,32 +71,24 @@ namespace WindowsFormsApp1.DAO
         public List<User> GetAll()
         {
             List<User> result = new List<User>();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            try
+            Console.WriteLine("get all users");
+            using (MySqlCommand command = new MySqlCommand("SELECT id, name, email, is_active, created_at FROM users", conn)) //1 connection, 1 reader v jeden moment
             {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
-
-                Console.WriteLine("get all users");
-                using (MySqlCommand command = new MySqlCommand("SELECT id, name, email, is_active, created_at FROM users", conn)) //1 connection, 1 reader v jeden moment
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            int id = reader.GetInt32("id");
-                            string name = reader.GetString("name");
-                            string email = reader.GetString("email");
-                            bool is_active = reader.GetBoolean("is_active");
-                            DateTime created_at = reader.GetDateTime("created_at");
+                        int id = reader.GetInt32("id");
+                        string name = reader.GetString("name");
+                        string email = reader.GetString("email");
+                        bool is_active = reader.GetBoolean("is_active");
+                        DateTime created_at = reader.GetDateTime("created_at");
 
-                            result.Add(new User(id, name, email, is_active, created_at));
-                        }
+                        result.Add(new User(id, name, email, is_active, created_at));
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;
@@ -134,33 +102,26 @@ namespace WindowsFormsApp1.DAO
         public User GetById(int id)
         {
             User result = null;
-            try
-            {
-                Console.WriteLine("getting user");
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine("getting user");
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("SELECT name, email, is_active, created_at FROM users WHERE id = @id", conn))
+            using (MySqlCommand command = new MySqlCommand("SELECT name, email, is_active, created_at FROM users WHERE id = @id", conn))
+            {
+                command.Parameters.Add(new MySqlParameter("@id", id));
+
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            string name = reader.GetString("name");
-                            string email = reader.GetString("email");
-                            bool is_active = reader.GetBoolean("is_active");
-                            DateTime created_at = reader.GetDateTime("created_at");
+                        string name = reader.GetString("name");
+                        string email = reader.GetString("email");
+                        bool is_active = reader.GetBoolean("is_active");
+                        DateTime created_at = reader.GetDateTime("created_at");
 
-                            result = new User(id, name, email, is_active, created_at);
-                        }
-                        else Console.WriteLine($"User with id {id} does not exist");
+                        result = new User(id, name, email, is_active, created_at);
                     }
+                    else Console.WriteLine($"User with id {id} does not exist");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;

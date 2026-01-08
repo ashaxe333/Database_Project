@@ -18,21 +18,13 @@ namespace WindowsFormsApp1.DAO
         /// <param name="id"> payment id </param>
         public void Delete(int id)
         {
-            try
-            {
-                Console.WriteLine("deleting payments");
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine("deleting payments");
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("DELETE FROM payments WHERE id = @id", conn))
-                {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-                    command.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
+            using (MySqlCommand command = new MySqlCommand("DELETE FROM payments WHERE id = @id", conn))
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Currently used as foreign key -> cannot be deleted");
+                command.Parameters.Add(new MySqlParameter("@id", id));
+                command.ExecuteNonQuery();
             }
         }
 
@@ -49,44 +41,28 @@ namespace WindowsFormsApp1.DAO
 
             if (payment.Id < 1)
             {
-                try
+                Console.WriteLine("inserting payments");
+                using (command = new MySqlCommand("INSERT INTO payments (loan_id, amount, payment_date) VALUES (@loan_id, @amount, @payment_date)", conn))
                 {
-                    Console.WriteLine("inserting payments");
-                    using (command = new MySqlCommand("INSERT INTO payments (loan_id, amount, payment_date) VALUES (@loan_id, @amount, @payment_date)", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@loan_id", payment.Loan_id));
-                        command.Parameters.Add(new MySqlParameter("@amount", payment.Amount));
-                        command.Parameters.Add(new MySqlParameter("@payment_date", payment.Payment_date));
-                        command.ExecuteNonQuery();
+                    command.Parameters.Add(new MySqlParameter("@loan_id", payment.Loan_id));
+                    command.Parameters.Add(new MySqlParameter("@amount", payment.Amount));
+                    command.Parameters.Add(new MySqlParameter("@payment_date", payment.Payment_date));
+                    command.ExecuteNonQuery();
 
-                        command.CommandText = "Select LAST_INSERT_ID()";
-                        payment.Id = Convert.ToInt32(command.ExecuteScalar());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("One of foreign keys cannot be added -> object doesnt exist");
+                    command.CommandText = "Select LAST_INSERT_ID()";
+                    payment.Id = Convert.ToInt32(command.ExecuteScalar());
                 }
             }
             else
             {
-                try
+                Console.WriteLine("updating payments");
+                using (command = new MySqlCommand("UPDATE payments SET loan_id = @loan_id, amount = @amount, payment_date = @payment_date WHERE id = @id", conn))
                 {
-                    Console.WriteLine("updating payments");
-                    using (command = new MySqlCommand("UPDATE payments SET loan_id = @loan_id, amount = @amount, payment_date = @payment_date WHERE id = @id", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@id", payment.Id));
-                        command.Parameters.Add(new MySqlParameter("@loan_id", payment.Loan_id));
-                        command.Parameters.Add(new MySqlParameter("@amount", payment.Amount));
-                        command.Parameters.Add(new MySqlParameter("@payment_date", payment.Payment_date));
-                        command.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("Selected id doesnt exist or one of foreign keys cannot be added -> object doesnt exist");
+                    command.Parameters.Add(new MySqlParameter("@id", payment.Id));
+                    command.Parameters.Add(new MySqlParameter("@loan_id", payment.Loan_id));
+                    command.Parameters.Add(new MySqlParameter("@amount", payment.Amount));
+                    command.Parameters.Add(new MySqlParameter("@payment_date", payment.Payment_date));
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -98,31 +74,23 @@ namespace WindowsFormsApp1.DAO
         public List<Payment> GetAll()
         {
             List<Payment> result = new List<Payment>();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            try
+            Console.WriteLine("get all payments");
+            using (MySqlCommand command = new MySqlCommand("SELECT id, loan_id, amount, payment_date FROM payments", conn)) //1 connection, 1 reader v jeden moment
             {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
-
-                Console.WriteLine("get all payments");
-                using (MySqlCommand command = new MySqlCommand("SELECT id, loan_id, amount, payment_date FROM payments", conn)) //1 connection, 1 reader v jeden moment
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            int id = reader.GetInt32("id");
-                            int loan_id = reader.GetInt32("loan_id");
-                            float amount = reader.GetFloat("amount");
-                            DateTime payment_date = reader.GetDateTime("payment_date");
-                            
-                            result.Add(new Payment(id, loan_id, amount, payment_date));
-                        }
+                        int id = reader.GetInt32("id");
+                        int loan_id = reader.GetInt32("loan_id");
+                        float amount = reader.GetFloat("amount");
+                        DateTime payment_date = reader.GetDateTime("payment_date");
+
+                        result.Add(new Payment(id, loan_id, amount, payment_date));
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;
@@ -136,32 +104,25 @@ namespace WindowsFormsApp1.DAO
         public Payment GetById(int id)
         {
             Payment result = null;
-            try
-            {
-                Console.WriteLine("getting payment");
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine("getting payment");
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("SELECT loan_id, amount, payment_date FROM payments WHERE id = @id", conn))
+            using (MySqlCommand command = new MySqlCommand("SELECT loan_id, amount, payment_date FROM payments WHERE id = @id", conn))
+            {
+                command.Parameters.Add(new MySqlParameter("@id", id));
+
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-                    
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            int loan_id = reader.GetInt32("loan_id");
-                            float amount = reader.GetFloat("amount");
-                            DateTime payment_date = reader.GetDateTime("payment_date");
+                        int loan_id = reader.GetInt32("loan_id");
+                        float amount = reader.GetFloat("amount");
+                        DateTime payment_date = reader.GetDateTime("payment_date");
 
-                            result = new Payment(id, loan_id, amount, payment_date);
-                        }
-                        else Console.WriteLine($"Payment with id {id} does not exist");
+                        result = new Payment(id, loan_id, amount, payment_date);
                     }
+                    else Console.WriteLine($"Payment with id {id} does not exist");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;

@@ -17,21 +17,13 @@ namespace WindowsFormsApp1.DAO
         /// <param name="id"> book_author id </param>
         public void Delete(int id)
         {
-            try
-            {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                Console.WriteLine("deleting book_authors");
-                using (MySqlCommand command = new MySqlCommand("DELETE FROM book_authors WHERE id = @id", conn))
-                {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-                    command.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
+            Console.WriteLine("deleting book_authors");
+            using (MySqlCommand command = new MySqlCommand("DELETE FROM book_authors WHERE id = @id", conn))
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Currently used as foreign key -> cannot be deleted");
+                command.Parameters.Add(new MySqlParameter("@id", id));
+                command.ExecuteNonQuery();
             }
         }
 
@@ -60,21 +52,13 @@ namespace WindowsFormsApp1.DAO
             }
             else
             {
-                try
+                Console.WriteLine("updating book_authors");
+                using (command = new MySqlCommand("UPDATE book_authors SET book_id = @book_id, author_id = @author_id WHERE id = @id", conn))
                 {
-                    Console.WriteLine("updating book_authors");
-                    using (command = new MySqlCommand("UPDATE book_authors SET book_id = @book_id, author_id = @author_id WHERE id = @id", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@id", book_authors.Id));
-                        command.Parameters.Add(new MySqlParameter("@book_id", book_authors.Book_id));
-                        command.Parameters.Add(new MySqlParameter("@author_id", book_authors.Author_id));
-                        command.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("Selected id doesnt exist or one of foreign keys cannot be added -> object doesnt exist");
+                    command.Parameters.Add(new MySqlParameter("@id", book_authors.Id));
+                    command.Parameters.Add(new MySqlParameter("@book_id", book_authors.Book_id));
+                    command.Parameters.Add(new MySqlParameter("@author_id", book_authors.Author_id));
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -86,30 +70,22 @@ namespace WindowsFormsApp1.DAO
         public List<Book_Authors> GetAll()
         {
             List<Book_Authors> result = new List<Book_Authors>();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            try
+            Console.WriteLine("get all book_authors");
+            using (MySqlCommand command = new MySqlCommand("SELECT id, book_id, author_id FROM book_authors", conn)) //1 connection, 1 reader v jeden moment
             {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
-
-                Console.WriteLine("get all book_authors");
-                using (MySqlCommand command = new MySqlCommand("SELECT id, book_id, author_id FROM book_authors", conn)) //1 connection, 1 reader v jeden moment
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            int id = reader.GetInt32("id");
-                            int book_id = reader.GetInt32("book_id");
-                            int author_id = reader.GetInt32("author_id");
+                        int id = reader.GetInt32("id");
+                        int book_id = reader.GetInt32("book_id");
+                        int author_id = reader.GetInt32("author_id");
 
-                            result.Add(new Book_Authors(id, book_id, author_id));
-                        }
+                        result.Add(new Book_Authors(id, book_id, author_id));
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;
@@ -123,31 +99,24 @@ namespace WindowsFormsApp1.DAO
         public Book_Authors GetById(int id)
         {
             Book_Authors result = null;
-            try
-            {
-                Console.WriteLine("getting book_authors");
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine("getting book_authors");
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("SELECT book_id, author_id FROM book_authors WHERE id = @id", conn))
+            using (MySqlCommand command = new MySqlCommand("SELECT book_id, author_id FROM book_authors WHERE id = @id", conn))
+            {
+                command.Parameters.Add(new MySqlParameter("@id", id));
+
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            int book_id = reader.GetInt32("book_id");
-                            int author_id = reader.GetInt32("author_id");
+                        int book_id = reader.GetInt32("book_id");
+                        int author_id = reader.GetInt32("author_id");
 
-                            result = new Book_Authors(id, book_id, author_id);
-                        }
-                        else Console.WriteLine($"book_authors with id {id} does not exist");
+                        result = new Book_Authors(id, book_id, author_id);
                     }
+                    else Console.WriteLine($"book_authors with id {id} does not exist");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsApp1.DAO;
@@ -75,6 +76,7 @@ namespace WindowsFormsApp1
             }
         }
 
+
         // Create new Book with new Author
 
         private void Submit2_Click(object sender, EventArgs e)
@@ -84,6 +86,11 @@ namespace WindowsFormsApp1
                 string authorName = AuthorNameInput.Text;
                 string bookTitle = BookTitleInput.Text;
                 int bookPublishedYear = int.Parse(BookPublishedYearInput.Text);
+
+                if(!Regex.IsMatch(authorName, "^[A-Za-zěščřžýáíéóúůďťňĚŠČŘŽÝÁÍÉÓÚŮĎŤŇ ']+$"))
+                {
+                    throw new Exception("Invalid name");
+                }
 
                 bookDAO.Save(new Book(bookTitle, bookPublishedYear, true));
                 authorDAO.Save(new Author(authorName));
@@ -154,7 +161,6 @@ namespace WindowsFormsApp1
             }
 
         }
-
 
 
 

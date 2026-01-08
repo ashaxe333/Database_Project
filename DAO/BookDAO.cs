@@ -17,22 +17,15 @@ namespace WindowsFormsApp1.DAO
         /// <param name="id"> book id </param>
         public void Delete(int id)
         {
-            try {
-                Console.WriteLine("deleting book");
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine("deleting book");
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("DELETE FROM books WHERE id = @id", conn))
-                {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-                    command.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
+            using (MySqlCommand command = new MySqlCommand("DELETE FROM books WHERE id = @id", conn))
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("Currently used as foreign key -> cannot be deleted");
+                command.Parameters.Add(new MySqlParameter("@id", id));
+                command.ExecuteNonQuery();
             }
-}
+        }
 
         /// <summary>
         /// Inserts or updates book based on id
@@ -48,44 +41,28 @@ namespace WindowsFormsApp1.DAO
 
             if (book.Id < 1)
             {
-                try
+                Console.WriteLine("inserting book");
+                using (command = new MySqlCommand("INSERT INTO books (title, published_year, available) VALUES (@title, @published_year, @isAvailable)", conn))
                 {
-                    Console.WriteLine("inserting book");
-                    using (command = new MySqlCommand("INSERT INTO books (title, published_year, available) VALUES (@title, @published_year, @isAvailable)", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@title", book.Title));
-                        command.Parameters.Add(new MySqlParameter("@published_year", book.Published_year));
-                        command.Parameters.Add(new MySqlParameter("@isAvailable", book.IsAvailable));
-                        command.ExecuteNonQuery();
+                    command.Parameters.Add(new MySqlParameter("@title", book.Title));
+                    command.Parameters.Add(new MySqlParameter("@published_year", book.Published_year));
+                    command.Parameters.Add(new MySqlParameter("@isAvailable", book.IsAvailable));
+                    command.ExecuteNonQuery();
 
-                        command.CommandText = "Select LAST_INSERT_ID()";
-                        book.Id = Convert.ToInt32(command.ExecuteScalar());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("One of foreign keys cannot be added -> object does not exist");
+                    command.CommandText = "Select LAST_INSERT_ID()";
+                    book.Id = Convert.ToInt32(command.ExecuteScalar());
                 }
             }
             else
             {
-                try
+                Console.WriteLine("updating book");
+                using (command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_year, available = @isAvailable WHERE id = @id", conn))
                 {
-                    Console.WriteLine("updating book");
-                    using (command = new MySqlCommand("UPDATE books SET title = @title, published_year = @published_year, available = @isAvailable WHERE id = @id", conn))
-                    {
-                        command.Parameters.Add(new MySqlParameter("@id", book.Id)); 
-                        command.Parameters.Add(new MySqlParameter("@title", book.Title));
-                        command.Parameters.Add(new MySqlParameter("@published_year", book.Published_year));
-                        command.Parameters.Add(new MySqlParameter("@isAvailable", book.IsAvailable));
-                        command.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine("Selected id does not exist or one of foreign keys cannot be added -> object does not exist");
+                    command.Parameters.Add(new MySqlParameter("@id", book.Id));
+                    command.Parameters.Add(new MySqlParameter("@title", book.Title));
+                    command.Parameters.Add(new MySqlParameter("@published_year", book.Published_year));
+                    command.Parameters.Add(new MySqlParameter("@isAvailable", book.IsAvailable));
+                    command.ExecuteNonQuery();
                 }
             }
         }
@@ -97,31 +74,23 @@ namespace WindowsFormsApp1.DAO
         public List<Book> GetAll()
         {
             List<Book> result = new List<Book>();
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-            try
+            Console.WriteLine("get all books");
+            using (MySqlCommand command = new MySqlCommand("SELECT id, title, published_year, available  FROM books", conn)) //1 connection, 1 reader v jeden moment
             {
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
-
-                Console.WriteLine("get all books");
-                using (MySqlCommand command = new MySqlCommand("SELECT id, title, published_year, available  FROM books", conn)) //1 connection, 1 reader v jeden moment
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
-                        {
-                            int id = reader.GetInt32("id");
-                            string title = reader.GetString("title");
-                            int? published_year = reader.IsDBNull(reader.GetOrdinal("published_year")) ? (int?)null : reader.GetInt32("published_year");
-                            bool available = reader.GetBoolean("available");
+                        int id = reader.GetInt32("id");
+                        string title = reader.GetString("title");
+                        int? published_year = reader.IsDBNull(reader.GetOrdinal("published_year")) ? (int?)null : reader.GetInt32("published_year");
+                        bool available = reader.GetBoolean("available");
 
-                            result.Add(new Book(id, title, published_year, available));
-                        }
+                        result.Add(new Book(id, title, published_year, available));
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;
@@ -135,32 +104,25 @@ namespace WindowsFormsApp1.DAO
         public Book GetById(int id)
         {
             Book result = null;
-            try
-            {
-                Console.WriteLine($"getting book with id {id}");
-                MySqlConnection conn = DatabaseSingleton.GetInstance();
+            Console.WriteLine($"getting book with id {id}");
+            MySqlConnection conn = DatabaseSingleton.GetInstance();
 
-                using (MySqlCommand command = new MySqlCommand("SELECT title, published_year, available FROM books WHERE id = @id", conn))
+            using (MySqlCommand command = new MySqlCommand("SELECT title, published_year, available FROM books WHERE id = @id", conn))
+            {
+                command.Parameters.Add(new MySqlParameter("@id", id));
+
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    command.Parameters.Add(new MySqlParameter("@id", id));
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            string title = reader.GetString("title");
-                            int? published_year = reader.IsDBNull(reader.GetOrdinal("published_year")) ? (int?)null : reader.GetInt32("published_year");
-                            bool available = reader.GetBoolean("available");
+                        string title = reader.GetString("title");
+                        int? published_year = reader.IsDBNull(reader.GetOrdinal("published_year")) ? (int?)null : reader.GetInt32("published_year");
+                        bool available = reader.GetBoolean("available");
 
-                            result = new Book(id, title, published_year, available);
-                        }
-                        else Console.WriteLine($"Book with id {id} does not exist");
+                        result = new Book(id, title, published_year, available);
                     }
+                    else Console.WriteLine($"Book with id {id} does not exist");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
 
             return result;
@@ -172,38 +134,30 @@ namespace WindowsFormsApp1.DAO
         /// <returns> Messages </returns>
         public string importCSV(string path)
         {
-            try
+            string line;
+            using (StreamReader reader = new StreamReader(path))
             {
-                string line;
-                using (StreamReader reader = new StreamReader(path))
+                bool help = false;
+                line = reader.ReadLine();
+
+                while (line != null)
                 {
-                    bool help = false;
-                    line = reader.ReadLine();
+                    line.Trim();
+                    var parts = line.Split(',');
 
-                    while (line != null)
+                    if (int.TryParse(parts[1], out int published_year) && bool.TryParse(parts[2], out bool isAvailable))
                     {
-                        line.Trim();
-                        var parts = line.Split(',');
-
-                        if (int.TryParse(parts[1], out int published_year) && bool.TryParse(parts[2], out bool isAvailable))
-                        {
-                            Save(new Book(parts[0], published_year, isAvailable));
-                        }
-                        else
-                        {
-                            help = true;
-                            return "Invalid datatype";
-                        }
-                        line = reader.ReadLine();
+                        Save(new Book(parts[0], published_year, isAvailable));
                     }
-                    if (!help) return "Import done";
-                    else return "Invalid datatype";
+                    else
+                    {
+                        help = true;
+                        return "Invalid datatype";
+                    }
+                    line = reader.ReadLine();
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return "Failed to load file";
+                if (!help) return "Import done";
+                else return "Invalid datatype";
             }
         }
 
