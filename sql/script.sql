@@ -152,21 +152,6 @@ GROUP BY u.id, u.name;
 
 select * from view_payment_summary;
 
--- TRANSACTION
-START TRANSACTION;
-
-INSERT INTO loans (user_id, book_id, loan_date, status)
-VALUES (1, 5, CURDATE(), 'BORROWED');
-
-INSERT INTO payments (loan_id, amount, payment_date)
-VALUES (LAST_INSERT_ID(), 50.0, NOW());
-
-UPDATE books
-SET available = false
-WHERE id = 5;
-
-COMMIT;
-
 -- CHECK
 select * from users;
 select * from authors;
@@ -174,6 +159,12 @@ select * from books;
 select * from book_authors;
 select * from loans;
 select * from payments;
+
+delete from book_authors where id > 10;
+delete from authors where id > 10;
+delete from books where id > 10;
+delete from loans where id > 10;
+delete from payments where id > 6;
 
 drop table users;
 drop table authors;

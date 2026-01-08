@@ -28,7 +28,7 @@ CREATE TABLE `authors` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,7 +57,7 @@ CREATE TABLE `book_authors` (
   KEY `author_id` (`author_id`),
   CONSTRAINT `book_authors_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`),
   CONSTRAINT `book_authors_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `authors` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +83,7 @@ CREATE TABLE `books` (
   `published_year` int DEFAULT NULL,
   `available` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -115,7 +115,7 @@ CREATE TABLE `loans` (
   KEY `book_id` (`book_id`),
   CONSTRAINT `loans_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   CONSTRAINT `loans_ibfk_2` FOREIGN KEY (`book_id`) REFERENCES `books` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -124,7 +124,7 @@ CREATE TABLE `loans` (
 
 LOCK TABLES `loans` WRITE;
 /*!40000 ALTER TABLE `loans` DISABLE KEYS */;
-INSERT INTO `loans` VALUES (1,1,1,'2025-12-01',NULL,'BORROWED'),(2,2,2,'2025-11-20','2025-12-05','RETURNED'),(3,3,5,'2025-11-10',NULL,'OVERDUE'),(4,4,1,'2025-10-01','2025-10-20','RETURNED'),(5,5,2,'2025-12-10',NULL,'BORROWED'),(6,6,5,'2025-09-15','2025-10-01','RETURNED'),(7,7,3,'2025-12-15',NULL,'BORROWED'),(8,8,4,'2025-11-01','2025-11-10','RETURNED'),(9,9,6,'2025-12-18',NULL,'BORROWED'),(10,10,7,'2025-12-19',NULL,'BORROWED'),(11,1,5,'2026-01-02',NULL,'BORROWED');
+INSERT INTO `loans` VALUES (1,1,1,'2025-12-01',NULL,'BORROWED'),(2,2,2,'2025-11-20','2025-12-05','RETURNED'),(3,3,5,'2025-11-10',NULL,'OVERDUE'),(4,4,1,'2025-10-01','2025-10-20','RETURNED'),(5,5,2,'2025-12-10',NULL,'BORROWED'),(6,6,5,'2025-09-15','2025-10-01','RETURNED'),(7,7,3,'2025-12-15',NULL,'BORROWED'),(8,8,4,'2025-11-01','2025-11-10','RETURNED'),(9,9,6,'2025-12-18',NULL,'BORROWED'),(10,10,7,'2025-12-19',NULL,'BORROWED');
 /*!40000 ALTER TABLE `loans` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,7 +152,7 @@ CREATE TABLE `payments` (
 
 LOCK TABLES `payments` WRITE;
 /*!40000 ALTER TABLE `payments` DISABLE KEYS */;
-INSERT INTO `payments` VALUES (1,1,50,'2025-12-01 10:00:00'),(2,2,20,'2025-12-05 14:30:00'),(3,3,75.5,'2025-11-15 09:00:00'),(4,4,10,'2025-10-20 16:45:00'),(5,6,15,'2025-10-01 11:20:00'),(6,8,25,'2025-11-10 13:10:00'),(7,11,50,'2026-01-02 15:36:10');
+INSERT INTO `payments` VALUES (1,1,50,'2025-12-01 10:00:00'),(2,2,20,'2025-12-05 14:30:00'),(3,3,75.5,'2025-11-15 09:00:00'),(4,4,10,'2025-10-20 16:45:00'),(5,6,15,'2025-10-01 11:20:00'),(6,8,25,'2025-11-10 13:10:00');
 /*!40000 ALTER TABLE `payments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -171,7 +171,7 @@ CREATE TABLE `users` (
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -266,4 +266,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-01-05 22:27:13
+-- Dump completed on 2026-01-08 21:51:36
