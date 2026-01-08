@@ -152,5 +152,9 @@
   <ItemGroup>
     <Folder Include="UI\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="sql\export.sql" />
+    <Content Include="sql\script.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
