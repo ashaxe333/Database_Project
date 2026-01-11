@@ -5,16 +5,24 @@ using MySql.Data.MySqlClient;
 
 namespace WindowsFormsApp1.Database
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class DatabaseSingleton
     {
         private static MySqlConnection conn = null;
+
+        /// <summary>
+        /// Private constructor to prevent external instantiation.
+        /// This is required for the Singleton design pattern.
+        /// </summary>
         private DatabaseSingleton()
         {
 
         }
+
+        /// <summary>
+        /// Returns a single instance of the MySQL database connection.
+        /// If the connection does not exist, it is created and opened.
+        /// </summary>
+        /// <returns> Open MySqlConnection instance </returns>
         public static MySqlConnection GetInstance()
         {
             if (conn == null)
@@ -27,12 +35,15 @@ namespace WindowsFormsApp1.Database
                 consStringBuilder.ConnectionTimeout = 30;
                 conn = new MySqlConnection(consStringBuilder.ConnectionString);
 
-                //conn.Open();
-
                 try
                 {
                     conn.Open();
                     Console.WriteLine($"Database '{consStringBuilder.Database}' connected successfully!");
+
+                    using (MySqlCommand command = new MySqlCommand("SET autocommit = 1;", conn))
+                    {
+                        command.ExecuteNonQuery();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -42,6 +53,10 @@ namespace WindowsFormsApp1.Database
             return conn;
         }
 
+        /// <summary>
+        /// Closes and disposes the current database connection.
+        /// Should be called when the application is shutting down.
+        /// </summary>
         public static void CloseConnection()
         {
             if (conn != null)
@@ -52,6 +67,11 @@ namespace WindowsFormsApp1.Database
             }
         }
 
+        /// <summary>
+        /// Reads a value from the application configuration file (App.config / exe.config).
+        /// </summary>
+        /// <param name="key">Configuration key name</param>
+        /// <returns>Configuration value or "Not Found" if key does not exist</returns>
         private static string ReadSetting(string key)
         {
             var appSettings = ConfigurationManager.AppSettings;

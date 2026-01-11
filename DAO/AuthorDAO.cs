@@ -133,6 +133,12 @@ namespace WindowsFormsApp1.DAO
 
                 while (line != null)
                 {
+                    //prevents to importing wrong data
+                    if (line.Contains(","))
+                    {
+                        throw new Exception("Name cannot contain separator (,)");
+                    }
+
                     Save(new Author(line), null);
                     line = reader.ReadLine();
                 }

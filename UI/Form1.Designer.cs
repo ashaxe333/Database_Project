@@ -51,13 +51,13 @@
             this.ShowPaymentSummary = new System.Windows.Forms.Button();
             this.ShowActiveLoans = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.Submit2 = new System.Windows.Forms.Button();
-            this.BookTitleInput = new System.Windows.Forms.TextBox();
-            this.BookTitle = new System.Windows.Forms.Label();
+            this.AuthorNameInput = new System.Windows.Forms.TextBox();
+            this.AuthorName = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.BookPublishedYearInput = new System.Windows.Forms.TextBox();
-            this.AuthorName = new System.Windows.Forms.Label();
-            this.AuthorNameInput = new System.Windows.Forms.TextBox();
+            this.BookTitle = new System.Windows.Forms.Label();
+            this.BookTitleInput = new System.Windows.Forms.TextBox();
+            this.Submit2 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -72,7 +72,6 @@
             this.UserInput.Name = "UserInput";
             this.UserInput.Size = new System.Drawing.Size(203, 24);
             this.UserInput.TabIndex = 0;
-            this.UserInput.SelectedIndexChanged += new System.EventHandler(this.UserInput_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -82,7 +81,6 @@
             this.label1.Size = new System.Drawing.Size(39, 16);
             this.label1.TabIndex = 1;
             this.label1.Text = "User:";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -100,7 +98,6 @@
             this.BookInput.Name = "BookInput";
             this.BookInput.Size = new System.Drawing.Size(200, 24);
             this.BookInput.TabIndex = 3;
-            this.BookInput.SelectedIndexChanged += new System.EventHandler(this.BookInput_SelectedIndexChanged);
             // 
             // LoanDateInput
             // 
@@ -150,7 +147,6 @@
             this.label5.Size = new System.Drawing.Size(80, 16);
             this.label5.TabIndex = 9;
             this.label5.Text = "Loan Status:";
-            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // SubmitBTN
             // 
@@ -262,7 +258,7 @@
             // 
             // ShowPaymentSummary
             // 
-            this.ShowPaymentSummary.Location = new System.Drawing.Point(175, 43);
+            this.ShowPaymentSummary.Location = new System.Drawing.Point(166, 43);
             this.ShowPaymentSummary.Name = "ShowPaymentSummary";
             this.ShowPaymentSummary.Size = new System.Drawing.Size(179, 31);
             this.ShowPaymentSummary.TabIndex = 1;
@@ -296,32 +292,21 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Create new book with new author";
             // 
-            // Submit2
+            // AuthorNameInput
             // 
-            this.Submit2.Location = new System.Drawing.Point(315, 224);
-            this.Submit2.Name = "Submit2";
-            this.Submit2.Size = new System.Drawing.Size(197, 34);
-            this.Submit2.TabIndex = 0;
-            this.Submit2.Text = "Submit";
-            this.Submit2.UseVisualStyleBackColor = true;
-            this.Submit2.Click += new System.EventHandler(this.Submit2_Click);
+            this.AuthorNameInput.Location = new System.Drawing.Point(267, 59);
+            this.AuthorNameInput.Name = "AuthorNameInput";
+            this.AuthorNameInput.Size = new System.Drawing.Size(150, 22);
+            this.AuthorNameInput.TabIndex = 9;
             // 
-            // BookTitleInput
+            // AuthorName
             // 
-            this.BookTitleInput.Location = new System.Drawing.Point(20, 59);
-            this.BookTitleInput.Name = "BookTitleInput";
-            this.BookTitleInput.Size = new System.Drawing.Size(150, 22);
-            this.BookTitleInput.TabIndex = 4;
-            this.BookTitleInput.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
-            // 
-            // BookTitle
-            // 
-            this.BookTitle.AutoSize = true;
-            this.BookTitle.Location = new System.Drawing.Point(17, 38);
-            this.BookTitle.Name = "BookTitle";
-            this.BookTitle.Size = new System.Drawing.Size(71, 16);
-            this.BookTitle.TabIndex = 5;
-            this.BookTitle.Text = "Book Title:";
+            this.AuthorName.AutoSize = true;
+            this.AuthorName.Location = new System.Drawing.Point(264, 38);
+            this.AuthorName.Name = "AuthorName";
+            this.AuthorName.Size = new System.Drawing.Size(88, 16);
+            this.AuthorName.TabIndex = 8;
+            this.AuthorName.Text = "Author Name:";
             // 
             // label8
             // 
@@ -339,21 +324,31 @@
             this.BookPublishedYearInput.Size = new System.Drawing.Size(150, 22);
             this.BookPublishedYearInput.TabIndex = 6;
             // 
-            // AuthorName
+            // BookTitle
             // 
-            this.AuthorName.AutoSize = true;
-            this.AuthorName.Location = new System.Drawing.Point(264, 38);
-            this.AuthorName.Name = "AuthorName";
-            this.AuthorName.Size = new System.Drawing.Size(88, 16);
-            this.AuthorName.TabIndex = 8;
-            this.AuthorName.Text = "Author Name:";
+            this.BookTitle.AutoSize = true;
+            this.BookTitle.Location = new System.Drawing.Point(17, 38);
+            this.BookTitle.Name = "BookTitle";
+            this.BookTitle.Size = new System.Drawing.Size(71, 16);
+            this.BookTitle.TabIndex = 5;
+            this.BookTitle.Text = "Book Title:";
             // 
-            // AuthorNameInput
+            // BookTitleInput
             // 
-            this.AuthorNameInput.Location = new System.Drawing.Point(267, 59);
-            this.AuthorNameInput.Name = "AuthorNameInput";
-            this.AuthorNameInput.Size = new System.Drawing.Size(150, 22);
-            this.AuthorNameInput.TabIndex = 9;
+            this.BookTitleInput.Location = new System.Drawing.Point(20, 59);
+            this.BookTitleInput.Name = "BookTitleInput";
+            this.BookTitleInput.Size = new System.Drawing.Size(150, 22);
+            this.BookTitleInput.TabIndex = 4;
+            // 
+            // Submit2
+            // 
+            this.Submit2.Location = new System.Drawing.Point(315, 224);
+            this.Submit2.Name = "Submit2";
+            this.Submit2.Size = new System.Drawing.Size(197, 34);
+            this.Submit2.TabIndex = 0;
+            this.Submit2.Text = "Submit";
+            this.Submit2.UseVisualStyleBackColor = true;
+            this.Submit2.Click += new System.EventHandler(this.Submit2_Click);
             // 
             // Form1
             // 

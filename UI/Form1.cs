@@ -204,17 +204,6 @@ namespace WindowsFormsApp1
             {
                 MessageBox.Text = "Failed \n" + ex.Message;
             }
-
         }
-
-
-
-
-        //Can't be deleted
-        private void UserInput_SelectedIndexChanged(object sender, EventArgs e){}
-        private void BookInput_SelectedIndexChanged(object sender, EventArgs e){}
-        private void label1_Click(object sender, EventArgs e){}
-        private void label5_Click(object sender, EventArgs e){}
-        private void textBox1_TextChanged(object sender, EventArgs e) {}
     }
 }
