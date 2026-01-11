@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using MySql.Data.MySqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySqlX.XDevAPI.Common;
 using WindowsFormsApp1.Models;
 using WindowsFormsApp1.Database;
 

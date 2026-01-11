@@ -1,12 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
 using WindowsFormsApp1.Database;
 using WindowsFormsApp1.Models;
-using System.Data;
-using System.Globalization;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.CodeDom;
 
 namespace WindowsFormsApp1.DAO
 {

@@ -1,13 +1,7 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WindowsFormsApp1.DAO;
 using WindowsFormsApp1.Database;
@@ -35,7 +29,9 @@ namespace WindowsFormsApp1
             LoadStatus();
         }
 
-        // Create loan
+        /// <summary>
+        /// Loads names of all users in database
+        /// </summary>
         private void LoadUsers()
         {
             List<User> users = userDAO.GetAll();
@@ -44,6 +40,9 @@ namespace WindowsFormsApp1
             UserInput.ValueMember = "Id";
         }
 
+        /// <summary>
+        /// Loads titles of all books in database
+        /// </summary>
         private void LoadBooks()
         {
             List<Book> books = bookDAO.GetAll();
@@ -52,11 +51,19 @@ namespace WindowsFormsApp1
             BookInput.ValueMember = "Id";
         }
 
+        /// <summary>
+        /// Loads status
+        /// </summary>
         private void LoadStatus()
         {
             LoanStatusInput.DataSource = Enum.GetValues(typeof(LoanStatus));
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"> SubmitBTN button </param>
+        /// <param name="e"> click </param>
         private void SubmitBTN_Click(object sender, EventArgs e)
         {
             try
@@ -79,8 +86,11 @@ namespace WindowsFormsApp1
             }
         }
 
-
-        // Create new Book with new Author
+        /// <summary>
+        /// Inserts new book, author and inserts new book_authors row
+        /// </summary>
+        /// <param name="sender"> Submit2 button </param>
+        /// <param name="e"> click </param>
         private void Submit2_Click(object sender, EventArgs e)
         {
             MySqlConnection conn = DatabaseSingleton.GetInstance();
@@ -116,10 +126,13 @@ namespace WindowsFormsApp1
                 transaction?.Rollback();
                 MessageBox.Text = "Failed \n" + ex.Message;
             }
-            
         }
 
-        // imports
+        /// <summary>
+        /// calls import method in bookDAO, and sends it path to csv file
+        /// </summary>
+        /// <param name="sender"> ImportToBooks button </param>
+        /// <param name="e"> click </param>
         private void ImportToBooks_Click(object sender, EventArgs e)
         {
             try
@@ -133,6 +146,11 @@ namespace WindowsFormsApp1
             }
         }
 
+        /// <summary>
+        /// calls import method in authorDAO, and sends it path to csv file
+        /// </summary>
+        /// <param name="sender"> ImportToAuthors button </param>
+        /// <param name="e"> click </param>
         private void ImportToAuthors_Click(object sender, EventArgs e)
         {
             try
@@ -146,7 +164,11 @@ namespace WindowsFormsApp1
             }
         }
 
-        // views
+        /// <summary>
+        /// writes all rows from view to output textbox
+        /// </summary>
+        /// <param name="sender"> ShowActiveLoans button </param>
+        /// <param name="e"> click </param>
         private void ShowActiveLoans_Click(object sender, EventArgs e)
         {
             try 
@@ -162,6 +184,12 @@ namespace WindowsFormsApp1
                 MessageBox.Text = "Failed \n" + ex.Message;
             }
         }
+
+        /// <summary>
+        /// writes all rows from view to output textbox
+        /// </summary>
+        /// <param name="sender"> ShowPaymentSummary button </param>
+        /// <param name="e"> click </param>
         private void ShowPaymentSummary_Click(object sender, EventArgs e)
         {
             try

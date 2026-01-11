@@ -105,10 +105,10 @@
     <Compile Include="DAO\PaymentSummaryDAO.cs" />
     <Compile Include="DAO\UserDAO.cs" />
     <Compile Include="Database\DatabaseSingleton.cs" />
-    <Compile Include="Form1.cs">
+    <Compile Include="UI\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
+    <Compile Include="UI\Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\ActiveLoan.cs" />
@@ -123,7 +123,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Prompt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
+    <EmbeddedResource Include="UI\Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -149,9 +149,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="sql\export.sql" />
     <Content Include="sql\script.sql" />

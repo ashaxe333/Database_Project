@@ -1,7 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using WindowsFormsApp1.Database;
 using WindowsFormsApp1.Models;
-using System.Data;
 using System;
 using System.Collections.Generic;
 
