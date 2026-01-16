@@ -2,10 +2,10 @@
 
 ## 1. Základní informace
 - **Název projektu:** Knihovní systém (Library Management System)
-- **Autor:** [DOPLŇ SVÉ JMÉNO]
-- **Kontaktní údaje:** [DOPLŇ EMAIL]
-- **Datum vypracování:** [DOPLŇ DATUM]
-- **Škola:** [DOPLŇ NÁZEV ŠKOLY]
+- **Autor:** Hynek Faktor
+- **Kontaktní údaje:** h.faktor06@gmail.com
+- **Datum vypracování:** 11.1. 2026
+- **Škola:** Střední průmyslová škola elektrotechnická Ječná 30
 - **Typ projektu:** Školní projekt
 
 ---
